@@ -20,17 +20,20 @@ later, but only the PA46-310P exists today.
 
 ---
 
-## 2. Target devices & layout  (Note 4)  [TODO]
-- **Must fit on screen with no scrolling** to see all inputs + results, in the
-  **installed** (standalone) viewport.
-- Layout decisions are **viewport-based** (size + orientation via CSS media
-  queries / `matchMedia`), not device sniffing.
-- **iPad mini (primary target), landscape:** app occupies roughly the **left
-  half** of the screen width and the **full height**. (Two-column feel: inputs
-  and results side by side, sized to the left half.)
-- **Phone:** **fill the screen**; adapt to **portrait or landscape**. Portrait =
-  stacked; landscape = inputs/results side by side. Never require scrolling.
-- Breakpoints/orientation drive the choice; no hard-coded device models.
+## 2. Target devices & layout  (Note 4)  [DONE]
+- **Viewport-based** (size + orientation media queries), no device sniffing.
+- **Tablet / large (iPad mini, primary), `min-width:680px & min-height:600px`:**
+  app occupies a **left-anchored panel** (`width: min(62vw, 680px)`) with a
+  right divider, **full height**, and lays inputs + results **side by side** so
+  everything **fits with no scrolling** (verified 1024×768 and 768×1024).
+  - NOTE: width is ~62%, a bit more than "half", because two comfortable columns
+    need it. Easy to narrow if preferred — see `body` width in the media query.
+- **Phone portrait:** single column, fills width; compacted to fit (fits on
+  taller phones; may lose the footer disclaimer on the shortest devices).
+- **Phone landscape (`orientation:landscape & max-height:560px`):** two columns,
+  extra compaction. Content is tall; this view may still scroll a little — the
+  strict no-scroll target is the iPad, per the note.
+- Body is `100dvh`, `overflow:hidden`; only `.app-main` scrolls as a fallback.
 
 ---
 
