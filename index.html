@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1f33">
+  <title>PA46 Power Settings</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PA46 Power">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="aircraft-picker">
+      <select id="aircraftSelect" aria-label="Active aircraft"></select>
+      <button id="manageBtn" class="icon-btn" aria-label="Manage aircraft" title="Manage aircraft">&#9881;</button>
+    </div>
+    <h1>PA46-310P Power</h1>
+  </header>
+
+  <main class="app-main">
+    <!-- Inputs -->
+    <section class="card inputs">
+      <div class="field">
+        <label for="baro">Altimeter setting <span class="unit">(in Hg)</span></label>
+        <input id="baro" type="number" inputmode="decimal" step="0.01" min="27" max="32" value="29.92">
+        <p class="hint" id="baroHint">&nbsp;</p>
+      </div>
+
+      <div class="field">
+        <label for="indAlt">Indicated altitude <span class="unit">(ft)</span></label>
+        <input id="indAlt" type="number" inputmode="numeric" step="100" min="0" max="30000" value="10000">
+      </div>
+
+      <div class="field">
+        <label for="oat">OAT <span class="unit">(&deg;C)</span></label>
+        <input id="oat" type="number" inputmode="numeric" step="1" min="-60" max="50" value="-5">
+        <p class="hint" id="oatHint">&nbsp;</p>
+      </div>
+
+      <div class="field">
+        <label>Desired performance</label>
+        <div class="power-buttons" id="powerButtons" role="group" aria-label="Power setting"></div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="card results" id="results">
+      <div class="result pa-result">
+        <span class="result-label">Pressure altitude</span>
+        <span class="result-value" id="rPA">—</span>
+      </div>
+
+      <div class="result-grid">
+        <div class="result">
+          <span class="result-label">RPM</span>
+          <span class="result-value" id="rRPM">—</span>
+        </div>
+        <div class="result">
+          <span class="result-label">Manifold pressure</span>
+          <span class="result-value" id="rMAP">—<span class="result-unit"> in Hg</span></span>
+        </div>
+        <div class="result">
+          <span class="result-label">Fuel flow</span>
+          <span class="result-value" id="rFF">—<span class="result-unit"> GPH</span></span>
+        </div>
+        <div class="result highlight">
+          <span class="result-label">Expected airspeed</span>
+          <span class="result-value" id="rTAS">—<span class="result-unit"> KTAS</span></span>
+        </div>
+      </div>
+
+      <p class="ff-note" id="ffNote"></p>
+      <div class="warnings" id="warnings"></div>
+    </section>
+
+    <p class="disclaimer">For reference only &mdash; not for flight. Verify against the POH.</p>
+  </main>
+
+  <!-- Manage-aircraft dialog -->
+  <dialog id="manageDialog" class="dialog">
+    <form method="dialog" class="dialog-body">
+      <h2>Aircraft</h2>
+      <div id="aircraftList" class="aircraft-list"></div>
+
+      <hr>
+      <h3 id="editorTitle">Add aircraft</h3>
+      <input type="hidden" id="editId">
+      <div class="field">
+        <label for="editName">Name / tail number</label>
+        <input id="editName" type="text" placeholder="e.g. N123AB — Malibu" maxlength="40">
+      </div>
+      <div class="field">
+        <label for="editBias">Airframe airspeed bias <span class="unit">(kt)</span></label>
+        <input id="editBias" type="number" inputmode="decimal" step="0.5" min="-30" max="30" value="0">
+        <p class="hint">+ if your airframe runs faster than book, − if slower.</p>
+      </div>
+      <label class="check-row">
+        <input type="checkbox" id="editDefault"> Open this aircraft by default
+      </label>
+
+      <div class="dialog-actions">
+        <button type="button" id="saveAircraftBtn" class="btn primary">Save</button>
+        <button type="button" id="newAircraftBtn" class="btn">New</button>
+        <button type="button" id="closeDialogBtn" class="btn ghost">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="calc.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
