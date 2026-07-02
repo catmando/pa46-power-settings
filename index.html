@@ -15,10 +15,10 @@
 <body>
   <header class="app-header">
     <div class="aircraft-picker">
+      <span class="brand">PA46</span>
       <select id="aircraftSelect" aria-label="Active aircraft"></select>
       <button id="manageBtn" class="icon-btn" aria-label="Manage aircraft" title="Manage aircraft">&#9881;</button>
     </div>
-    <h1>PA46-310P Power</h1>
   </header>
 
   <main class="app-main">
@@ -32,7 +32,11 @@
 
       <div class="field">
         <label for="indAlt">Indicated altitude <span class="unit">(ft)</span></label>
-        <input id="indAlt" type="number" inputmode="numeric" step="100" min="0" max="30000" value="10000">
+        <div class="stepper">
+          <button type="button" class="step-btn" id="altDown" aria-label="Decrease altitude">&minus;</button>
+          <input id="indAlt" type="number" inputmode="numeric" step="500" min="0" max="30000" value="18000">
+          <button type="button" class="step-btn" id="altUp" aria-label="Increase altitude">+</button>
+        </div>
       </div>
 
       <div class="field">
@@ -73,7 +77,6 @@
         </div>
       </div>
 
-      <p class="ff-note" id="ffNote"></p>
       <div class="warnings" id="warnings"></div>
     </section>
 

@@ -39,17 +39,17 @@ body {
   padding: calc(env(safe-area-inset-top) + 10px) 16px 12px;
   border-bottom: 1px solid var(--line);
 }
-.app-header h1 {
-  margin: 8px 0 0;
-  font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--muted);
-}
 .aircraft-picker {
   display: flex;
   gap: 8px;
   align-items: center;
+}
+.brand {
+  flex: 0 0 auto;
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
 }
 #aircraftSelect {
   flex: 1;
@@ -118,6 +118,26 @@ input:disabled { opacity: 0.55; }
   min-height: 1em;
 }
 
+/* Stepper (indicated altitude) ------------------------------------------- */
+.stepper { display: flex; align-items: stretch; gap: 8px; }
+.stepper input {
+  flex: 1;
+  text-align: center;
+}
+.step-btn {
+  flex: 0 0 auto;
+  width: 56px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card-2);
+  color: var(--text);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+.step-btn:active { background: var(--accent); color: #04233f; }
+
 /* Power buttons ----------------------------------------------------------- */
 .power-buttons {
   display: grid;
@@ -171,11 +191,6 @@ input:disabled { opacity: 0.55; }
   background: var(--bg-2);
   border-radius: 10px;
   padding: 10px 12px;
-}
-.ff-note {
-  margin: 14px 0 0;
-  font-size: 0.82rem;
-  color: var(--muted);
 }
 .warnings:not(:empty) { margin-top: 12px; }
 .warning {

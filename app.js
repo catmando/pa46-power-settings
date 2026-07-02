@@ -41,8 +41,14 @@
     activeId = def.id;
   }
 
-  const defaultInputs = { baro: 29.92, indAlt: 10000, oat: -5, powerKey: '65' };
+  // First-startup defaults: 18,000 ft, ISA temp there (-21 C), 65% power.
+  const defaultInputs = { baro: 29.92, indAlt: 18000, oat: -21, powerKey: '65' };
   let inputs = Object.assign({}, defaultInputs, loadJSON(LS.inputs, {}));
+
+  // Altitude stepper increment: 500 ft below 18,000, 1,000 ft at/above.
+  const ALT_STEP_BREAK = 18000;
+  function altStepUp(v) { return (v >= ALT_STEP_BREAK ? 1000 : 500); }
+  function altStepDown(v) { return (v > ALT_STEP_BREAK ? 1000 : 500); }
 
   // --- Elements ------------------------------------------------------------
   const el = {
@@ -51,6 +57,8 @@
     baro: document.getElementById('baro'),
     baroHint: document.getElementById('baroHint'),
     indAlt: document.getElementById('indAlt'),
+    altUp: document.getElementById('altUp'),
+    altDown: document.getElementById('altDown'),
     oat: document.getElementById('oat'),
     oatHint: document.getElementById('oatHint'),
     powerButtons: document.getElementById('powerButtons'),
@@ -59,7 +67,6 @@
     rMAP: document.getElementById('rMAP'),
     rFF: document.getElementById('rFF'),
     rTAS: document.getElementById('rTAS'),
-    ffNote: document.getElementById('ffNote'),
     warnings: document.getElementById('warnings'),
     // dialog
     dialog: document.getElementById('manageDialog'),
@@ -163,6 +170,9 @@
     inputs.oat = oat;
     persistInputs();
 
+    // Keep the native step in sync with the altitude range (500 vs 1000).
+    if (Number.isFinite(indAlt)) el.indAlt.step = altStepUp(indAlt);
+
     // OAT hint: show the ISA standard temp at this pressure altitude.
     if (Number.isFinite(indAlt) && Number.isFinite(baro)) {
       const pa = PA46_CALC.pressureAltitude(indAlt, baro);
@@ -193,15 +203,6 @@
       el.rTAS.innerHTML = fmtInt(result.tasKt) + '<span class="result-unit"> KTAS</span>';
     }
 
-    // Fuel-flow note explaining the temp correction.
-    const corr = result.fuelFlow.correctionGph;
-    const dir = corr >= 0 ? '+' : '−';
-    el.ffNote.textContent = 'Book ' + result.fuelFlow.base + ' GPH ' + dir + ' ' +
-      (Math.round(Math.abs(corr) * 10) / 10).toFixed(1) + ' GPH for OAT ' +
-      (Math.round(result.isaTempC) === Math.round(oat) ? 'at' : (oat < result.isaTempC ? 'below' : 'above')) +
-      ' ISA (' + Math.round(result.isaTempC) + '°C).' +
-      (result.airframeBiasKt ? '  Airspeed includes ' + (result.airframeBiasKt > 0 ? '+' : '') + result.airframeBiasKt + ' kt airframe bias.' : '');
-
     // Warnings.
     el.warnings.innerHTML = '';
     for (const w of result.warnings) {
@@ -218,7 +219,6 @@
     el.rMAP.innerHTML = '—<span class="result-unit"> in Hg</span>';
     el.rFF.innerHTML = '—<span class="result-unit"> GPH</span>';
     el.rTAS.innerHTML = '—<span class="result-unit"> KTAS</span>';
-    el.ffNote.textContent = 'Enter altimeter, altitude, and OAT.';
     el.warnings.innerHTML = '';
   }
 
@@ -320,6 +320,19 @@
   el.baro.addEventListener('input', recompute);
   el.indAlt.addEventListener('input', recompute);
   el.oat.addEventListener('input', recompute);
+
+  function stepAltitude(dir) {
+    let v = num(el.indAlt.value);
+    if (!Number.isFinite(v)) v = ALT_STEP_BREAK;
+    v = dir > 0 ? v + altStepUp(v) : v - altStepDown(v);
+    const min = parseInt(el.indAlt.min, 10) || 0;
+    const max = parseInt(el.indAlt.max, 10) || 30000;
+    v = Math.max(min, Math.min(max, v));
+    el.indAlt.value = v;
+    recompute();
+  }
+  el.altUp.addEventListener('click', function () { stepAltitude(1); });
+  el.altDown.addEventListener('click', function () { stepAltitude(-1); });
 
   el.manageBtn.addEventListener('click', function () {
     renderAircraftList();
