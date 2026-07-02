@@ -85,32 +85,63 @@
 
   <!-- Manage-aircraft dialog -->
   <dialog id="manageDialog" class="dialog">
-    <form method="dialog" class="dialog-body">
-      <h2>Aircraft</h2>
+    <div class="dialog-body">
+      <div class="dialog-head">
+        <h2>Aircraft</h2>
+        <button type="button" id="closeDialogBtn" class="icon-btn" aria-label="Close">&times;</button>
+      </div>
+
       <div id="aircraftList" class="aircraft-list"></div>
+      <button type="button" id="addAircraftBtn" class="btn add-btn">+ Add aircraft</button>
 
-      <hr>
-      <h3 id="editorTitle">Add aircraft</h3>
-      <input type="hidden" id="editId">
-      <div class="field">
-        <label for="editName">Name / tail number</label>
-        <input id="editName" type="text" placeholder="e.g. N123AB — Malibu" maxlength="40">
-      </div>
-      <div class="field">
-        <label for="editBias">Airframe airspeed bias <span class="unit">(kt)</span></label>
-        <input id="editBias" type="number" inputmode="decimal" step="0.5" min="-30" max="30" value="0">
-        <p class="hint">+ if your airframe runs faster than book, − if slower.</p>
-      </div>
-      <label class="check-row">
-        <input type="checkbox" id="editDefault"> Open this aircraft by default
-      </label>
+      <!-- Editor: shown only when adding or editing -->
+      <div id="editor" class="editor" hidden>
+        <hr>
+        <h3 id="editorTitle">Add aircraft</h3>
+        <input type="hidden" id="editId">
 
-      <div class="dialog-actions">
-        <button type="button" id="saveAircraftBtn" class="btn primary">Save</button>
-        <button type="button" id="newAircraftBtn" class="btn">New</button>
-        <button type="button" id="closeDialogBtn" class="btn ghost">Close</button>
+        <div class="field">
+          <label for="editType">Aircraft type</label>
+          <select id="editType"></select>
+        </div>
+
+        <div class="field">
+          <label for="editName">Name / tail number</label>
+          <input id="editName" type="text" placeholder="e.g. N123AB — Malibu" maxlength="40">
+        </div>
+
+        <div class="field">
+          <label>Airframe airspeed bias</label>
+          <div class="seg" id="biasMode" role="group" aria-label="Bias entry mode">
+            <button type="button" class="seg-btn active" data-mode="pct">Percent</button>
+            <button type="button" class="seg-btn" data-mode="kt">Knots @ alt</button>
+          </div>
+
+          <div id="biasPctRow" class="bias-row">
+            <input id="editBiasPct" type="number" inputmode="decimal" step="0.1" min="-20" max="20" value="0">
+            <span class="unit">%</span>
+          </div>
+
+          <div id="biasKtRow" class="bias-row" hidden>
+            <input id="editBiasKt" type="number" inputmode="numeric" step="1" min="-40" max="40" placeholder="±kt">
+            <span class="unit">kt at</span>
+            <input id="editBiasAlt" type="number" inputmode="numeric" step="1000" min="0" max="25000" value="18000">
+            <span class="unit">ft</span>
+          </div>
+
+          <p class="hint" id="biasHelp">+ if your airframe runs faster than book, − if slower. Applied as a uniform % at all altitudes.</p>
+        </div>
+
+        <label class="check-row">
+          <input type="checkbox" id="editDefault"> Open this aircraft by default
+        </label>
+
+        <div class="dialog-actions">
+          <button type="button" id="saveAircraftBtn" class="btn primary">Save</button>
+          <button type="button" id="cancelEditBtn" class="btn ghost">Cancel</button>
+        </div>
       </div>
-    </form>
+    </div>
   </dialog>
 
   <script src="data.js"></script>

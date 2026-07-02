@@ -11,6 +11,15 @@
  * else (the power table) is transcribed directly from the printed text.
  */
 
+// --- Aircraft types ----------------------------------------------------------
+// Only the PA46-310P exists today. Structured as a list so more types can be
+// added later; each record's `id` is stored on the aircraft. For now every type
+// resolves to the single data set below (power table + TAS table).
+const AIRCRAFT_TYPES = [
+  { id: 'PA46-310P', label: 'PA46-310P (Malibu)' },
+];
+const DEFAULT_AIRCRAFT_TYPE = AIRCRAFT_TYPES[0].id;
+
 // --- ISA standard atmosphere -------------------------------------------------
 const ISA_SEA_LEVEL_TEMP_C = 15;      // deg C at sea level
 const ISA_LAPSE_C_PER_1000FT = 2;     // drops 2 deg C per 1000 ft
@@ -99,6 +108,8 @@ const CEILING_FT = 25000;                     // top of the published data
 
 // Expose as a namespace so app.js and the service worker share one source.
 const PA46_DATA = {
+  AIRCRAFT_TYPES,
+  DEFAULT_AIRCRAFT_TYPE,
   isaTempC,
   POWER_SETTINGS,
   POWER_ORDER,

@@ -66,9 +66,17 @@ function tasFromChart(powerKey, pressureAltFt) {
   return series[series.length - 1];
 }
 
+// Convert a "X kt at altitude Y" airframe measurement into a uniform percentage
+// bias, using the 75% High-Speed Cruise curve (where owners typically measure).
+function biasKtToPct(kt, refAltFt) {
+  const ref = tasFromChart('75', refAltFt);
+  if (!ref) return 0;
+  return (kt / ref) * 100;
+}
+
 // Full solution for a set of inputs.
 //   inputs: { indicatedAltFt, altimeterInHg, oatC, powerKey }
-//   aircraft: { airframeBiasKt } (per-aircraft airspeed adjustment)
+//   aircraft: { biasPct } (per-aircraft airspeed adjustment, uniform %)
 function solve(inputs, aircraft) {
   const { indicatedAltFt, altimeterInHg, oatC, powerKey } = inputs;
   const setting = PA46_DATA.POWER_SETTINGS[powerKey];
@@ -78,9 +86,9 @@ function solve(inputs, aircraft) {
   const rpmOpt = selectRpmOption(powerKey, paFt);
   const ff = fuelFlow(powerKey, paFt, oatC);
 
-  const biasKt = aircraft && Number.isFinite(aircraft.airframeBiasKt) ? aircraft.airframeBiasKt : 0;
+  const biasPct = aircraft && Number.isFinite(aircraft.biasPct) ? aircraft.biasPct : 0;
   let chartTas = setting.noTas ? null : tasFromChart(powerKey, paFt);
-  const tas = chartTas == null ? null : chartTas + biasKt;
+  const tas = chartTas == null ? null : chartTas * (1 + biasPct / 100);
 
   const warnings = [];
   if (setting.noHighAltitude && paFt > PA46_DATA.HIGH_ALT_RPM_THRESHOLD_FT) {
@@ -99,7 +107,7 @@ function solve(inputs, aircraft) {
     fuelFlow: ff,
     isaTempC: ff.isaTempC,
     chartTasKt: chartTas,
-    airframeBiasKt: biasKt,
+    airframeBiasPct: biasPct,
     tasKt: tas,
     warnings,
     setting,
@@ -114,5 +122,6 @@ const PA46_CALC = {
   selectRpmOption,
   fuelFlow,
   tasFromChart,
+  biasKtToPct,
   solve,
 };

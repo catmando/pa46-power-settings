@@ -53,7 +53,7 @@ later, but only the PA46-310P exists today.
 | Fuel flow | GPH. Book base ± temperature correction. **[DONE]** |
 | Expected airspeed | KTAS. Interpolated from the chart, then adjusted by the per-aircraft bias %. Not shown for Holding. **[DONE]** |
 
-The fuel-flow **explanatory note line is removed** (Note 3). **[TODO]**
+The fuel-flow **explanatory note line is removed** (Note 3). **[DONE]**
 
 ---
 
@@ -96,7 +96,7 @@ Best-estimate digitization of "Cruise Speed vs. Altitude" (std temp, 3,740 lb):
 
 ---
 
-## 6. Aircraft management  [partly DONE]
+## 6. Aircraft management  [DONE]
 - Multiple saved aircraft; one marked **default** (opens on launch).
 - Switch active aircraft via the **header dropdown**.
 - **Settings/manage screen** contents:
@@ -111,18 +111,17 @@ Best-estimate digitization of "Cruise Speed vs. Altitude" (std temp, 3,740 lb):
 
 ---
 
-## 7. Airframe airspeed bias  (Note 9)  [TODO]
+## 7. Airframe airspeed bias  (Note 9)  [DONE]
 - Stored and applied as a **percentage** of book TAS, **uniformly at all
   altitudes**: `displayedTAS = chartTAS × (1 + bias% / 100)`.
 - Entry accepted **two ways**, both resolving to the stored %:
   1. **Direct percentage** (e.g. −3%).
   2. **Knots at a reference altitude** (e.g. "−10 kt at 18,000 ft"): app computes
-     `bias% = (enteredKt / chartTAS_at(refAlt, referencePower)) × 100`, then
-     applies that % uniformly.
-     - **[OPEN-minor]** which power curve to use when converting a kt entry:
-       propose the **currently selected power**, or a fixed reference (e.g. 65%).
-       Default assumption: the aircraft's/UI's current power setting at entry
-       time. Confirm during implementation.
+     `bias% = (enteredKt / chartTAS_at(refAlt, 75%)) × 100`, then applies that %
+     uniformly at all altitudes.
+     - **[RESOLVED]** Conversion always uses the **75% High-Speed Cruise** curve
+       — that is where most owners measure their airframe's speed. Only kt + a
+       reference altitude are entered; no power picker needed.
 
 ---
 
@@ -135,7 +134,7 @@ Browser `localStorage`:
 
 ---
 
-## 9. Header  (Note 5)  [TODO]
+## 9. Header  (Note 5)  [DONE]
 Combine the current two header rows (aircraft picker + title) into a **single
 line**: aircraft dropdown + settings gear together, no separate title row (or a
 compact inline title).
@@ -172,7 +171,6 @@ service worker require HTTPS (localhost exempt; LAN IP is not).
 ---
 
 ## 13. Open items summary
-- **[OPEN-minor]** §7 — power curve used when converting a "kt at altitude" bias.
 - **[TODO]** Verify TAS table against POH; correct in `data.js`.
 - **[TODO]** All Note 1–10 UI/behavior changes above.
 - **[TODO]** Exercise on real iPad mini + phone; publish to GitHub Pages.

@@ -32,8 +32,17 @@
   // --- App state -----------------------------------------------------------
   let aircraft = loadJSON(LS.aircraft, null);
   if (!Array.isArray(aircraft) || aircraft.length === 0) {
-    aircraft = [{ id: newId(), name: 'My PA46-310P', airframeBiasKt: 0, isDefault: true }];
+    aircraft = [{ id: newId(), type: PA46_DATA.DEFAULT_AIRCRAFT_TYPE, name: 'My PA46-310P', biasPct: 0, isDefault: true }];
     saveJSON(LS.aircraft, aircraft);
+  } else {
+    // Migrate older records: ensure type + biasPct; drop legacy airframeBiasKt.
+    let changed = false;
+    aircraft.forEach(function (a) {
+      if (a.type == null) { a.type = PA46_DATA.DEFAULT_AIRCRAFT_TYPE; changed = true; }
+      if (a.biasPct == null) { a.biasPct = 0; changed = true; }
+      if ('airframeBiasKt' in a) { delete a.airframeBiasKt; changed = true; }
+    });
+    if (changed) saveJSON(LS.aircraft, aircraft);
   }
   let activeId = loadJSON(LS.activeId, null);
   if (!aircraft.some(a => a.id === activeId)) {
@@ -71,13 +80,22 @@
     // dialog
     dialog: document.getElementById('manageDialog'),
     aircraftList: document.getElementById('aircraftList'),
+    addAircraftBtn: document.getElementById('addAircraftBtn'),
+    editor: document.getElementById('editor'),
     editId: document.getElementById('editId'),
+    editType: document.getElementById('editType'),
     editName: document.getElementById('editName'),
-    editBias: document.getElementById('editBias'),
+    biasMode: document.getElementById('biasMode'),
+    biasPctRow: document.getElementById('biasPctRow'),
+    biasKtRow: document.getElementById('biasKtRow'),
+    editBiasPct: document.getElementById('editBiasPct'),
+    editBiasKt: document.getElementById('editBiasKt'),
+    editBiasAlt: document.getElementById('editBiasAlt'),
+    biasHelp: document.getElementById('biasHelp'),
     editDefault: document.getElementById('editDefault'),
     editorTitle: document.getElementById('editorTitle'),
     saveAircraftBtn: document.getElementById('saveAircraftBtn'),
-    newAircraftBtn: document.getElementById('newAircraftBtn'),
+    cancelEditBtn: document.getElementById('cancelEditBtn'),
     closeDialogBtn: document.getElementById('closeDialogBtn'),
   };
 
@@ -223,22 +241,33 @@
   }
 
   // --- Manage-aircraft dialog ---------------------------------------------
+  function typeLabel(typeId) {
+    const t = PA46_DATA.AIRCRAFT_TYPES.find(function (x) { return x.id === typeId; });
+    return t ? t.label : typeId;
+  }
+
+  function fmtBiasPct(p) {
+    if (!p) return '±0%';
+    return (p > 0 ? '+' : '') + (Math.round(p * 10) / 10) + '%';
+  }
+
   function renderAircraftList() {
     el.aircraftList.innerHTML = '';
     for (const a of aircraft) {
       const row = document.createElement('div');
       row.className = 'aircraft-row';
-      const bias = a.airframeBiasKt ? ((a.airframeBiasKt > 0 ? '+' : '') + a.airframeBiasKt + ' kt') : '±0 kt';
       row.innerHTML =
-        '<span class="ar-name">' + escapeHtml(a.name) + '</span>' +
-        (a.isDefault ? '<span class="ar-badge">DEFAULT</span>' : '') +
-        '<span class="ar-bias">' + bias + '</span>';
+        '<div class="ar-main">' +
+          '<span class="ar-name">' + escapeHtml(a.name) + '</span>' +
+          '<span class="ar-meta">' + escapeHtml(typeLabel(a.type)) + ' · ' + fmtBiasPct(a.biasPct) + '</span>' +
+        '</div>' +
+        (a.isDefault ? '<span class="ar-badge">DEFAULT</span>' : '');
 
       const edit = document.createElement('button');
       edit.type = 'button';
       edit.className = 'link-btn';
       edit.textContent = 'Edit';
-      edit.addEventListener('click', function () { fillEditor(a); });
+      edit.addEventListener('click', function () { openEditor(a); });
       row.appendChild(edit);
 
       if (aircraft.length > 1) {
@@ -253,26 +282,84 @@
     }
   }
 
-  function fillEditor(a) {
+  function populateTypeDropdown() {
+    el.editType.innerHTML = '';
+    for (const t of PA46_DATA.AIRCRAFT_TYPES) {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.label;
+      el.editType.appendChild(opt);
+    }
+  }
+
+  // Bias entry mode: 'pct' (direct percent) or 'kt' (knots @ altitude -> %).
+  function setBiasMode(mode) {
+    const pct = mode !== 'kt';
+    el.biasPctRow.hidden = !pct;
+    el.biasKtRow.hidden = pct;
+    Array.prototype.forEach.call(el.biasMode.children, function (b) {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
+    updateBiasHelp();
+  }
+
+  // The percentage that will actually be saved, given the current mode/fields.
+  function resolvedBiasPct() {
+    if (el.biasKtRow.hidden) {
+      return num(el.editBiasPct.value) || 0;
+    }
+    const kt = num(el.editBiasKt.value);
+    const alt = num(el.editBiasAlt.value);
+    if (!Number.isFinite(kt) || !Number.isFinite(alt)) return 0;
+    return PA46_CALC.biasKtToPct(kt, alt);
+  }
+
+  function updateBiasHelp() {
+    if (el.biasKtRow.hidden) {
+      el.biasHelp.textContent = '+ if your airframe runs faster than book, − if slower. Applied as a uniform % at all altitudes.';
+    } else {
+      const pct = resolvedBiasPct();
+      const ref = PA46_CALC.tasFromChart('75', num(el.editBiasAlt.value) || 0);
+      el.biasHelp.textContent = 'Converted vs. 75% high-speed cruise (' +
+        (ref ? Math.round(ref) + ' kt book' : '—') + ') → ' + fmtBiasPct(pct) +
+        ', applied uniformly at all altitudes.';
+    }
+  }
+
+  function openEditor(a) {
     el.editorTitle.textContent = a ? 'Edit aircraft' : 'Add aircraft';
     el.editId.value = a ? a.id : '';
+    el.editType.value = a ? a.type : PA46_DATA.DEFAULT_AIRCRAFT_TYPE;
     el.editName.value = a ? a.name : '';
-    el.editBias.value = a ? a.airframeBiasKt : 0;
-    el.editDefault.checked = a ? !!a.isDefault : false;
+    el.editBiasPct.value = a ? (Math.round((a.biasPct || 0) * 10) / 10) : 0;
+    el.editBiasKt.value = '';
+    el.editBiasAlt.value = 18000;
+    el.editDefault.checked = a ? !!a.isDefault : (aircraft.length === 0);
+    setBiasMode('pct');
+    el.editor.hidden = false;
+    el.addAircraftBtn.hidden = true;
+    el.editName.focus();
+  }
+
+  function closeEditor() {
+    el.editor.hidden = true;
+    el.addAircraftBtn.hidden = false;
   }
 
   function saveAircraft() {
     const id = el.editId.value || newId();
+    const type = el.editType.value || PA46_DATA.DEFAULT_AIRCRAFT_TYPE;
     const name = (el.editName.value || '').trim() || 'Unnamed PA46';
-    const bias = num(el.editBias.value) || 0;
+    const biasPct = Math.round(resolvedBiasPct() * 100) / 100;
     const makeDefault = el.editDefault.checked;
 
     const existing = aircraft.find(a => a.id === id);
     if (existing) {
+      existing.type = type;
       existing.name = name;
-      existing.airframeBiasKt = bias;
+      existing.biasPct = biasPct;
     } else {
-      aircraft.push({ id, name, airframeBiasKt: bias, isDefault: false });
+      aircraft.push({ id, type, name, biasPct, isDefault: false });
     }
     if (makeDefault) {
       aircraft.forEach(a => { a.isDefault = (a.id === id); });
@@ -281,13 +368,9 @@
     }
     saveJSON(LS.aircraft, aircraft);
 
-    // If the edited aircraft is active, its bias change should recompute.
-    if (id === activeId || makeDefault) {
-      if (makeDefault) { /* keep current active as-is */ }
-    }
     renderAircraftPicker();
     renderAircraftList();
-    fillEditor(null);
+    closeEditor();
     recompute();
   }
 
@@ -301,7 +384,7 @@
     saveJSON(LS.activeId, activeId);
     renderAircraftPicker();
     renderAircraftList();
-    fillEditor(null);
+    closeEditor();
     recompute();
   }
 
@@ -336,16 +419,26 @@
 
   el.manageBtn.addEventListener('click', function () {
     renderAircraftList();
-    fillEditor(null);
+    closeEditor();
     if (typeof el.dialog.showModal === 'function') el.dialog.showModal();
     else el.dialog.setAttribute('open', '');
   });
+  el.addAircraftBtn.addEventListener('click', function () { openEditor(null); });
   el.saveAircraftBtn.addEventListener('click', saveAircraft);
-  el.newAircraftBtn.addEventListener('click', function () { fillEditor(null); });
+  el.cancelEditBtn.addEventListener('click', closeEditor);
   el.closeDialogBtn.addEventListener('click', function () {
     if (typeof el.dialog.close === 'function') el.dialog.close();
     else el.dialog.removeAttribute('open');
   });
+
+  // Bias mode toggle + live conversion help.
+  Array.prototype.forEach.call(el.biasMode.children, function (b) {
+    b.addEventListener('click', function () { setBiasMode(b.dataset.mode); });
+  });
+  el.editBiasKt.addEventListener('input', updateBiasHelp);
+  el.editBiasAlt.addEventListener('input', updateBiasHelp);
+
+  populateTypeDropdown();
 
   // --- Init ----------------------------------------------------------------
   renderAircraftPicker();
