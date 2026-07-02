@@ -82,10 +82,18 @@ To test on a phone on the same network, serve over the LAN IP; for real install
 (Add to Home Screen) you need HTTPS — deploy to GitHub Pages (below).
 
 ## Verifying the engine (no browser needed)
-`calc.js` is DOM-free. Load `data.js` + `calc.js` in Node and call
-`PA46_CALC.solve({indicatedAltFt, altimeterInHg, oatC, powerKey}, {airframeBiasKt})`.
-A sanity harness was used during development covering PA computation, the forced
-29.92 above 18k, RPM banding, fuel-flow correction, Holding warning, and interp.
+`calc.js` is DOM-free. Run the test suite:
+
+```
+npm test        # or: node tests.js
+```
+
+`tests.js` (zero deps) covers PA computation incl. forced 29.92 above 18k, RPM
+band boundaries, fuel-flow correction, Holding warning/no-TAS, TAS interpolation
++ clamping, and airframe-bias %. It also has a `TAS_TRUTH` table (±2 kt) — replace
+its expected values with real POH-chart readings to make it a true cross-check.
+Aircraft bias is now a uniform **percentage** (`biasPct`); solve() takes
+`{ biasPct }`.
 
 ## Deployment (planned)
 GitHub Pages: push repo → enable Pages on the default branch root → share the

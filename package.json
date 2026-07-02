@@ -1,0 +1,10 @@
+{
+  "name": "pa46-power-settings",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offline PA46-310P power-setting and cruise-speed calculator (PWA).",
+  "scripts": {
+    "test": "node tests.js",
+    "serve": "python3 -m http.server 8000"
+  }
+}

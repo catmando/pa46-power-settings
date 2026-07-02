@@ -153,16 +153,17 @@ compact inline title).
 
 ---
 
-## 11. Testing  (Note 10)  [TODO]
-- **TAS validation test:** pick a few `(power, altitude)` points, take the true
-  value read from the POH graph, and assert the app's interpolated output is
-  within tolerance (proposed **±2 kt**, tune as needed). Covers digitized curves
-  + interpolation.
-- **Engine unit tests** (already exercised informally; formalize): pressure
-  altitude incl. forced 29.92 above 18k; RPM band boundaries (14,999 / 15,000 /
-  19,999 / 20,000 ft); fuel-flow correction sign & magnitude; Holding warning +
-  no-TAS; interpolation midpoints; clamping at SL and 25,000.
-- Runnable in Node against `data.js` + `calc.js` (DOM-free engine).
+## 11. Testing  (Note 10)  [DONE — TAS truth values pending POH]
+- Zero-dependency Node suite in `tests.js` (`npm test` or `node tests.js`).
+  42 checks, all passing.
+- **Engine unit tests:** pressure altitude incl. forced 29.92 above 18k; RPM
+  band boundaries (14,999 / 15,000 / 19,999 / 20,000 ft); fuel-flow correction
+  sign & magnitude; Holding warning + no-TAS; interpolation midpoints; clamping
+  at SL and 25,000; airframe-bias % (incl. kt→% conversion).
+- **TAS truth table** (`TAS_TRUTH` in tests.js): a few `(power, altitude)` points
+  asserted within **±2 kt**. Currently mirrors the digitized table (so it passes);
+  **replace the expected values with readings taken off the POH chart** to turn it
+  into a real cross-check.
 
 ---
 
