@@ -7,17 +7,19 @@
 const STANDARD_ALTIMETER_INHG = 29.92;
 const FLIGHT_LEVEL_TRANSITION_FT = 18000; // above this, altimeter is set to 29.92
 
-// Pressure altitude from indicated altitude + altimeter setting.
-//   PA = indicated + (29.92 - altimeter) * 1000
-// Above 18,000 ft the altimeter is standard (29.92), so PA == indicated.
-function pressureAltitude(indicatedAltFt, altimeterInHg) {
-  const baro = indicatedAltFt > FLIGHT_LEVEL_TRANSITION_FT ? STANDARD_ALTIMETER_INHG : altimeterInHg;
-  return indicatedAltFt + (STANDARD_ALTIMETER_INHG - baro) * 1000;
+// Pressure altitude from assigned altitude + altimeter setting.
+//   PA = assigned + (29.92 - altimeter) * 1000
+// At/above 18,000 ft (the flight levels) the altimeter is standard (29.92), so
+// PA == assigned and there is nothing extra to show.
+function pressureAltitude(assignedAltFt, altimeterInHg) {
+  const baro = assignedAltFt >= FLIGHT_LEVEL_TRANSITION_FT ? STANDARD_ALTIMETER_INHG : altimeterInHg;
+  return assignedAltFt + (STANDARD_ALTIMETER_INHG - baro) * 1000;
 }
 
-// Is the altimeter forced to standard for this indicated altitude?
-function altimeterIsForcedStandard(indicatedAltFt) {
-  return indicatedAltFt > FLIGHT_LEVEL_TRANSITION_FT;
+// Are we in the flight levels (>= 18,000 ft), where the altimeter is 29.92 and
+// pressure altitude equals the assigned altitude?
+function altimeterIsForcedStandard(assignedAltFt) {
+  return assignedAltFt >= FLIGHT_LEVEL_TRANSITION_FT;
 }
 
 // Auto-select the RPM/MAP option for a power setting at a pressure altitude,

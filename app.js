@@ -73,8 +73,8 @@
     altDown: document.getElementById('altDown'),
     oat: document.getElementById('oat'),
     oatHint: document.getElementById('oatHint'),
+    paHint: document.getElementById('paHint'),
     powerButtons: document.getElementById('powerButtons'),
-    rPA: document.getElementById('rPA'),
     rRPM: document.getElementById('rRPM'),
     rMAP: document.getElementById('rMAP'),
     rFF: document.getElementById('rFF'),
@@ -167,7 +167,7 @@
     if (forced) {
       el.baro.value = PA46_CALC.STANDARD_ALTIMETER_INHG.toFixed(2);
       el.baro.disabled = true;
-      el.baroHint.textContent = 'Above 18,000 ft — altimeter set to 29.92 (standard).';
+      el.baroHint.textContent = 'Flight levels (18,000 ft+) — altimeter is 29.92 (standard).';
     } else {
       el.baro.disabled = false;
       el.baroHint.innerHTML = '&nbsp;';
@@ -213,7 +213,14 @@
       activeAircraft()
     );
 
-    el.rPA.textContent = fmtInt(result.pressureAltFt) + ' ft';
+    // Pressure altitude shown as a small hint under the assigned altitude —
+    // hidden in the flight levels (>= 18,000 ft), where PA == assigned.
+    if (result.altimeterForcedStandard) {
+      el.paHint.innerHTML = '&nbsp;';
+    } else {
+      el.paHint.textContent = 'Pressure altitude: ' + fmtInt(result.pressureAltFt) + ' ft';
+    }
+
     el.rRPM.textContent = fmtInt(result.rpm);
     el.rMAP.innerHTML = fmtMap(result.manifoldPressureInHg) + '<span class="result-unit"> in Hg</span>';
     el.rFF.innerHTML = fmtFF(result.fuelFlow.totalGph) + '<span class="result-unit"> GPH</span>';
@@ -235,7 +242,7 @@
   }
 
   function blankResults() {
-    el.rPA.textContent = '—';
+    el.paHint.innerHTML = '&nbsp;';
     el.rRPM.textContent = '—';
     el.rMAP.innerHTML = '—<span class="result-unit"> in Hg</span>';
     el.rFF.innerHTML = '—<span class="result-unit"> GPH</span>';

@@ -31,12 +31,13 @@
       </div>
 
       <div class="field">
-        <label for="indAlt">Indicated altitude <span class="unit">(ft)</span></label>
+        <label for="indAlt">Assigned altitude <span class="unit">(ft)</span></label>
         <div class="stepper">
           <button type="button" class="step-btn" id="altDown" aria-label="Decrease altitude">&minus;</button>
           <input id="indAlt" type="number" inputmode="numeric" step="500" min="0" max="30000" value="18000">
           <button type="button" class="step-btn" id="altUp" aria-label="Increase altitude">+</button>
         </div>
+        <p class="hint" id="paHint">&nbsp;</p>
       </div>
 
       <div class="field">
@@ -53,11 +54,6 @@
 
     <!-- Results -->
     <section class="card results" id="results">
-      <div class="result pa-result">
-        <span class="result-label">Pressure altitude</span>
-        <span class="result-value" id="rPA">—</span>
-      </div>
-
       <div class="result-grid">
         <div class="result">
           <span class="result-label">RPM</span>

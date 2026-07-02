@@ -48,9 +48,10 @@ near('PA standard 10k @29.92', PA46_CALC.pressureAltitude(10000, 29.92), 10000, 
 near('PA low baro 29.42 -> +500', PA46_CALC.pressureAltitude(10000, 29.42), 10500, 0.001);
 near('PA high baro 30.42 -> -500', PA46_CALC.pressureAltitude(10000, 30.42), 9500, 0.001);
 // Above 18,000 ft the altimeter is forced to 29.92, so PA == indicated.
-near('PA forced std above 18k ignores baro', PA46_CALC.pressureAltitude(19000, 29.42), 19000, 0.001);
-eq('altimeter forced at 19k', PA46_CALC.altimeterIsForcedStandard(19000), true);
-eq('altimeter not forced at 18k', PA46_CALC.altimeterIsForcedStandard(18000), false);
+near('PA forced std at/above 18k ignores baro', PA46_CALC.pressureAltitude(19000, 29.42), 19000, 0.001);
+eq('flight level at 19k', PA46_CALC.altimeterIsForcedStandard(19000), true);
+eq('flight level at exactly 18k', PA46_CALC.altimeterIsForcedStandard(18000), true);
+eq('not flight level at 17,999', PA46_CALC.altimeterIsForcedStandard(17999), false);
 
 // === 2. RPM / MAP band selection ============================================
 // 65% Economy: <15k -> 2300/28, 15-20k -> 2400/26.5, >=20k -> 2500/25

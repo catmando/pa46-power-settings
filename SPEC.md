@@ -20,28 +20,28 @@ later, but only the PA46-310P exists today.
 
 ---
 
-## 2. Target devices & layout  (Note 4)  [DONE]
-- **Viewport-based** (size + orientation media queries), no device sniffing.
-- **Tablet / large (iPad mini, primary), `min-width:680px & min-height:600px`:**
-  app occupies a **left-anchored panel** (`width: min(62vw, 680px)`) with a
-  right divider, **full height**, and lays inputs + results **side by side** so
-  everything **fits with no scrolling** (verified 1024×768 and 768×1024).
-  - NOTE: width is ~62%, a bit more than "half", because two comfortable columns
-    need it. Easy to narrow if preferred — see `body` width in the media query.
-- **Phone portrait:** single column, fills width; compacted to fit (fits on
-  taller phones; may lose the footer disclaimer on the shortest devices).
-- **Phone landscape (`orientation:landscape & max-height:560px`):** two columns,
-  extra compaction. Content is tall; this view may still scroll a little — the
-  strict no-scroll target is the iPad, per the note.
-- Body is `100dvh`, `overflow:hidden`; only `.app-main` scrolls as a fallback.
+## 2. Target devices & layout  (Note 4, revised)  [DONE]
+- **Single column on ALL devices.** The whole UI is sized in **rem**, and the
+  root font-size **scales with viewport height** (`font-size: clamp(14px,
+  2.05dvh, 23px)`). So the phone-portrait layout simply **scales up to fill an
+  iPad** (portrait or landscape) and down to fit shorter screens — same layout,
+  proportionally sized. Column width = `min(94vw, 34rem)`, centered.
+- **Verified no-scroll:** phone portrait (500×844), iPad portrait (768×1024),
+  iPad landscape (1024×768, within ~2px).
+- **Phone landscape only (`orientation:landscape & max-height:560px`):** switches
+  to a compact **two-column** grid so the results stay visible; the inputs column
+  is taller than a phone's landscape height, so the last power buttons may need a
+  small scroll. Best-effort per Note request; results never clip.
+- Body is `100dvh`, `overflow:hidden`; only `.app-main` scrolls when it must.
+- Viewport-based throughout; no device sniffing.
 
 ---
 
 ## 3. Inputs  (four)
 | Input | Units | Notes |
 |---|---|---|
-| Altimeter setting | in Hg | Persists across sessions. **Auto-locked to 29.92** and disabled when indicated altitude > 18,000 ft. |
-| Indicated altitude | ft | Stepper: **+/- 500 below 18,000 ft, +/- 1,000 at/above 18,000 ft** (Note 1). **Default 18,000 on first startup** (Note 2). |
+| Altimeter setting | in Hg | Persists across sessions. **Auto-locked to 29.92** and disabled at/above 18,000 ft (the flight levels). |
+| Assigned altitude | ft | Renamed from "Indicated" (Note, revised). Stepper: **+/- 500 below 18,000 ft, +/- 1,000 at/above** (Note 1). **Default 18,000 on first startup** (Note 2). |
 | OAT | °C | Used only for the fuel-flow temperature correction. **Auto-tracks altitude** (Note 11): when indicated altitude changes, OAT shifts −2 °C/1,000 ft from its current value (preserving the pilot's ISA deviation). A manual OAT edit sets a new baseline. Tracks on stepper clicks and committed (blur/Enter) altitude edits, not per keystroke. |
 | Desired performance | — | One of: High Speed 75% · Economy 65% · Long Range 55% · Holding. |
 
@@ -50,7 +50,7 @@ later, but only the PA46-310P exists today.
 ## 4. Outputs  (book values, no override)
 | Output | Notes |
 |---|---|
-| Pressure altitude | `indicated + (29.92 − altimeter) × 1000`. Above 18,000 ft altimeter is 29.92, so PA == indicated. **[DONE]** |
+| Pressure altitude | `assigned + (29.92 − altimeter) × 1000`. Shown as a **small hint line under the assigned-altitude field** (ISA-hint font), NOT a big result. **Hidden at/above 18,000 ft** (flight levels), where PA == assigned. **[DONE]** |
 | RPM | Discrete book value, auto-selected by altitude band. **Not interpolated.** **[DONE]** |
 | Manifold pressure | in Hg, paired with the selected RPM. **Not interpolated.** **[DONE]** |
 | Fuel flow | GPH. Book base ± temperature correction. **[DONE]** |

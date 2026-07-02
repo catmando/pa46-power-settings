@@ -12,7 +12,6 @@
   --warn: #ffb454;
   --danger: #ff6b6b;
   --radius: 14px;
-  font-size: 17px;
 }
 
 * { box-sizing: border-box; }
@@ -26,10 +25,15 @@ html, body {
   -webkit-text-size-adjust: 100%;
 }
 
-/* App fills the viewport; only the main content area scrolls if it must
-   (target is no scroll at all on the primary devices). Layout is chosen by
-   viewport size + orientation, never device sniffing (Note 4). */
-html { height: 100%; }
+/* App fills the viewport. It is one single column on all devices; the whole UI
+   is sized in rem, and the root font-size scales with the viewport HEIGHT — so
+   the same phone-portrait layout simply scales up to fill an iPad (portrait or
+   landscape) and down to fit shorter screens. Only .app-main scrolls if it must.
+   (Viewport-based, never device sniffing — Note 4 / Note 11 layout.) */
+html {
+  height: 100%;
+  font-size: clamp(14px, 2.05dvh, 23px);
+}
 body {
   height: 100dvh;
   display: flex;
@@ -38,28 +42,23 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Tablet / large screens (iPad mini is the primary device): occupy roughly the
-   left portion of the screen, full height, with a divider. Inputs and results
-   sit SIDE BY SIDE so everything fits with no scrolling. */
-@media (min-width: 680px) and (min-height: 600px) {
-  body {
-    width: min(62vw, 680px);
-    border-right: 1px solid var(--line);
-  }
-}
+/* Single-column width, shared by the header and main content. */
+:root { --col: min(94vw, 34rem); }
 
 /* Header ------------------------------------------------------------------ */
 .app-header {
   flex: 0 0 auto;
   z-index: 5;
   background: linear-gradient(180deg, var(--bg-2), var(--bg));
-  padding: calc(env(safe-area-inset-top) + 10px) 16px 12px;
+  padding: calc(env(safe-area-inset-top) + 0.6rem) 0.9rem 0.7rem;
   border-bottom: 1px solid var(--line);
 }
 .aircraft-picker {
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
   align-items: center;
+  max-width: var(--col);
+  margin: 0 auto;
 }
 .brand {
   flex: 0 0 auto;
@@ -70,18 +69,19 @@ body {
 }
 #aircraftSelect {
   flex: 1;
+  min-width: 0;
   appearance: none;
   background: var(--card);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 0.55rem 0.7rem;
   font-size: 1rem;
 }
 .icon-btn {
   flex: 0 0 auto;
-  width: 44px;
-  height: 44px;
+  width: 2.6rem;
+  height: 2.6rem;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: var(--card);
@@ -96,46 +96,50 @@ body {
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 14px;
+  width: 100%;
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: 0.8rem 0.9rem calc(0.8rem + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 0.8rem;
 }
 
-/* Two-column layouts (inputs left, results right) so everything fits with no
-   vertical scrolling. Applies on tablets/large screens AND on short landscape
-   phones. Placed AFTER the base .app-main so these overrides win when matched. */
-@media (min-width: 680px) and (min-height: 600px),
-       (orientation: landscape) and (max-height: 560px) {
+/* Phone LANDSCAPE only (short height): two columns so nothing is cut off.
+   Placed AFTER the base .app-main so it wins when matched. */
+@media (orientation: landscape) and (max-height: 560px) {
   .app-main {
+    max-width: none;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: min-content;
     align-content: start;
-    gap: 12px;
+    gap: 10px;
   }
   .app-main .disclaimer { grid-column: 1 / -1; }
-}
-/* Extra compaction only where height is very tight (landscape phones). */
-@media (orientation: landscape) and (max-height: 560px) {
-  .field { margin-bottom: 8px; }
-  .card { padding: 10px; }
+  .field { margin-bottom: 0.35rem; }
+  .field label { margin-bottom: 0.15rem; }
+  .card { padding: 0.5rem; }
+  .power-btn { padding: 0.3rem 0.5rem; }
+  .power-buttons { gap: 0.35rem; }
+  input[type="number"], input[type="text"] { padding: 0.4rem 0.6rem; font-size: 1rem; }
+  .hint { margin-top: 0.15rem; }
 }
 .card {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 14px;
+  padding: 0.85rem;
 }
 
 /* Inputs ------------------------------------------------------------------ */
-.field { margin-bottom: 12px; }
+.field { margin-bottom: 0.7rem; }
 .field:last-child { margin-bottom: 0; }
 .field label {
   display: block;
   font-size: 0.88rem;
   color: var(--muted);
-  margin-bottom: 5px;
+  margin-bottom: 0.3rem;
 }
 .field .unit { color: var(--muted); font-weight: 400; }
 input[type="number"], input[type="text"] {
@@ -144,28 +148,28 @@ input[type="number"], input[type="text"] {
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 0.55rem 0.7rem;
   font-size: 1.15rem;
   font-variant-numeric: tabular-nums;
 }
 input:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
 input:disabled { opacity: 0.55; }
 .hint {
-  margin: 5px 2px 0;
+  margin: 0.3rem 0.1rem 0;
   font-size: 0.78rem;
   color: var(--muted);
   min-height: 1em;
 }
 
-/* Stepper (indicated altitude) ------------------------------------------- */
-.stepper { display: flex; align-items: stretch; gap: 8px; }
+/* Stepper (assigned altitude) -------------------------------------------- */
+.stepper { display: flex; align-items: stretch; gap: 0.5rem; }
 .stepper input {
   flex: 1;
   text-align: center;
 }
 .step-btn {
   flex: 0 0 auto;
-  width: 56px;
+  width: 3.2rem;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: var(--card-2);
@@ -181,10 +185,10 @@ input:disabled { opacity: 0.55; }
 .power-buttons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 0.5rem;
 }
 .power-btn {
-  padding: 9px 10px;
+  padding: 0.5rem 0.6rem;
   border-radius: 10px;
   border: 1px solid var(--line);
   background: var(--bg-2);
@@ -193,7 +197,7 @@ input:disabled { opacity: 0.55; }
   cursor: pointer;
 }
 .power-btn .pb-title { display: block; font-weight: 600; font-size: 0.92rem; line-height: 1.2; }
-.power-btn .pb-sub { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.power-btn .pb-sub { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 0.1rem; }
 .power-btn.active {
   border-color: var(--accent);
   background: var(--card-2);
@@ -201,20 +205,12 @@ input:disabled { opacity: 0.55; }
 }
 
 /* Results ----------------------------------------------------------------- */
-.pa-result {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid var(--line);
-}
 .result-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 0.6rem;
 }
-.result { display: flex; flex-direction: column; gap: 3px; }
+.result { display: flex; flex-direction: column; gap: 0.15rem; }
 .result-label { font-size: 0.8rem; color: var(--muted); }
 .result-value {
   font-size: 1.5rem;
@@ -222,31 +218,30 @@ input:disabled { opacity: 0.55; }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.01em;
 }
-.pa-result .result-value { color: var(--accent); }
 .result-unit { font-size: 0.85rem; font-weight: 500; color: var(--muted); }
 .result.highlight .result-value { color: var(--accent-2); }
 .result.highlight {
   grid-column: 1 / -1;
   background: var(--bg-2);
   border-radius: 10px;
-  padding: 8px 12px;
+  padding: 0.5rem 0.7rem;
 }
-.warnings:not(:empty) { margin-top: 12px; }
+.warnings:not(:empty) { margin-top: 0.7rem; }
 .warning {
   background: rgba(255, 180, 84, 0.12);
   border: 1px solid var(--warn);
   color: #ffdca8;
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 0.6rem 0.7rem;
   font-size: 0.85rem;
-  margin-top: 8px;
+  margin-top: 0.5rem;
 }
 .disclaimer {
   text-align: center;
   font-size: 0.75rem;
   color: var(--muted);
   opacity: 0.8;
-  margin: 2px 0 8px;
+  margin: 0.1rem 0 0.4rem;
 }
 
 /* Dialog ------------------------------------------------------------------ */
