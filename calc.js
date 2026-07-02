@@ -74,6 +74,15 @@ function biasKtToPct(kt, refAltFt) {
   return (kt / ref) * 100;
 }
 
+// Track OAT as altitude changes: shift by the ISA lapse rate (2 C / 1000 ft)
+// from the current value, so a re-assigned altitude keeps a realistic OAT while
+// preserving the pilot's deviation from standard. Returns an unrounded value;
+// the UI rounds and clamps. Cooling with climb -> OAT drops as altitude rises.
+function oatAfterAltitudeChange(curOatC, oldAltFt, newAltFt) {
+  const deltaThousands = (newAltFt - oldAltFt) / 1000;
+  return curOatC - PA46_DATA.ISA_LAPSE_C_PER_1000FT * deltaThousands;
+}
+
 // Full solution for a set of inputs.
 //   inputs: { indicatedAltFt, altimeterInHg, oatC, powerKey }
 //   aircraft: { biasPct } (per-aircraft airspeed adjustment, uniform %)
@@ -123,5 +132,6 @@ const PA46_CALC = {
   fuelFlow,
   tasFromChart,
   biasKtToPct,
+  oatAfterAltitudeChange,
   solve,
 };

@@ -119,6 +119,13 @@ for (const [p, alt, truth] of TAS_TRUTH) {
   near('TAS truth ' + p + '% @' + alt + 'ft', PA46_CALC.tasFromChart(p, alt), truth, TAS_TOL_KT);
 }
 
+// === 8. OAT tracking with altitude (2 C / 1000 ft) ==========================
+near('OAT +1000 ft cools 2C', PA46_CALC.oatAfterAltitudeChange(-21, 18000, 19000), -23, 1e-9);
+near('OAT -1000 ft warms 2C', PA46_CALC.oatAfterAltitudeChange(-21, 18000, 17000), -19, 1e-9);
+near('OAT +500 ft cools 1C', PA46_CALC.oatAfterAltitudeChange(-21, 18000, 18500), -22, 1e-9);
+near('OAT +6000 ft cools 12C', PA46_CALC.oatAfterAltitudeChange(0, 4000, 10000), -12, 1e-9);
+near('OAT same altitude unchanged', PA46_CALC.oatAfterAltitudeChange(-5, 10000, 10000), -5, 1e-9);
+
 // --- Report -----------------------------------------------------------------
 console.log('\nPA46 engine tests');
 console.log('  passed: ' + passed);

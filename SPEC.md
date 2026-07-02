@@ -42,7 +42,7 @@ later, but only the PA46-310P exists today.
 |---|---|---|
 | Altimeter setting | in Hg | Persists across sessions. **Auto-locked to 29.92** and disabled when indicated altitude > 18,000 ft. |
 | Indicated altitude | ft | Stepper: **+/- 500 below 18,000 ft, +/- 1,000 at/above 18,000 ft** (Note 1). **Default 18,000 on first startup** (Note 2). |
-| OAT | °C | Used only for the fuel-flow temperature correction. |
+| OAT | °C | Used only for the fuel-flow temperature correction. **Auto-tracks altitude** (Note 11): when indicated altitude changes, OAT shifts −2 °C/1,000 ft from its current value (preserving the pilot's ISA deviation). A manual OAT edit sets a new baseline. Tracks on stepper clicks and committed (blur/Enter) altitude edits, not per keystroke. |
 | Desired performance | — | One of: High Speed 75% · Economy 65% · Long Range 55% · Holding. |
 
 ---

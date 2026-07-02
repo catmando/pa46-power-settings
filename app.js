@@ -59,6 +59,9 @@
   function altStepUp(v) { return (v >= ALT_STEP_BREAK ? 1000 : 500); }
   function altStepDown(v) { return (v > ALT_STEP_BREAK ? 1000 : 500); }
 
+  // Baseline altitude used to track OAT as altitude changes (see below).
+  let lastIndAlt = Number.isFinite(inputs.indAlt) ? inputs.indAlt : ALT_STEP_BREAK;
+
   // --- Elements ------------------------------------------------------------
   const el = {
     aircraftSelect: document.getElementById('aircraftSelect'),
@@ -400,8 +403,31 @@
     saveJSON(LS.activeId, activeId);
     recompute();
   });
+  // As indicated altitude changes, shift OAT by the ISA lapse rate (2 C/1000 ft)
+  // from its current value, so a re-assigned altitude keeps a realistic OAT.
+  // A manual OAT edit becomes the new baseline automatically (we read the field).
+  function adjustOatForAltitude(newAlt) {
+    if (Number.isFinite(newAlt) && Number.isFinite(lastIndAlt) && newAlt !== lastIndAlt) {
+      const curOat = num(el.oat.value);
+      if (Number.isFinite(curOat)) {
+        let o = Math.round(PA46_CALC.oatAfterAltitudeChange(curOat, lastIndAlt, newAlt));
+        const omin = parseInt(el.oat.min, 10), omax = parseInt(el.oat.max, 10);
+        if (Number.isFinite(omin)) o = Math.max(omin, o);
+        if (Number.isFinite(omax)) o = Math.min(omax, o);
+        el.oat.value = o;
+      }
+    }
+    if (Number.isFinite(newAlt)) lastIndAlt = newAlt;
+  }
+
   el.baro.addEventListener('input', recompute);
+  // Live typing updates results, but OAT only re-tracks once the altitude edit is
+  // committed (blur/Enter) — otherwise intermediate keystrokes would thrash it.
   el.indAlt.addEventListener('input', recompute);
+  el.indAlt.addEventListener('change', function () {
+    adjustOatForAltitude(num(el.indAlt.value));
+    recompute();
+  });
   el.oat.addEventListener('input', recompute);
 
   function stepAltitude(dir) {
@@ -412,6 +438,7 @@
     const max = parseInt(el.indAlt.max, 10) || 30000;
     v = Math.max(min, Math.min(max, v));
     el.indAlt.value = v;
+    adjustOatForAltitude(v);
     recompute();
   }
   el.altUp.addEventListener('click', function () { stepAltitude(1); });
