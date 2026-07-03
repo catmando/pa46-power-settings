@@ -148,8 +148,13 @@ next online (service worker re-caches on CACHE_VERSION bump).
 ## TODO / open items
 - [x] TAS_TABLE digitized (concave curves, SL→24k) + `TAS_TRUTH` test in place.
       Optional: a final eyeball of the numbers against the actual chart.
+- [x] **Published** — repo https://github.com/catmando/pa46-power-settings ,
+      live at **https://catmando.github.io/pa46-power-settings/** (Pages from
+      `master` root, `.nojekyll`). Verified all assets serve 200 + app runs from
+      prod. Note: the very first Pages deploy failed twice with a transient
+      "Deployment failed, try again later" — a retry (`gh api -X POST .../pages/builds`)
+      fixed it. To ship updates: commit, bump `sw.js` CACHE_VERSION, push to master.
 - [ ] Exercise the UI on Mitch's real iPhone/iPad in the installed PWA.
-- [ ] **Publish to GitHub Pages** (no git remote yet) and share the link.
 - [ ] (Optional) support hPa/mb altimeter entry in addition to in Hg.
 - [x] **Multi-variant ready.** Performance data is keyed by aircraft type in
       `data.js` → `AIRCRAFT_DATA` (powerSettings + tas + referenceWeightLb +

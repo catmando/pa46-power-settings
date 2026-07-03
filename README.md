@@ -6,9 +6,18 @@ web app (PWA). No server, no login, no internet needed once loaded.
 
 > **For reference only — not for flight. Always verify against the POH.**
 
-## Use it
-Open the hosted URL on a phone (iOS or Android), then **Add to Home Screen**. It
-then runs fully offline, like a native app.
+## Use it → https://catmando.github.io/pa46-power-settings/
+
+Open that link on your phone/tablet, then install it so it runs offline like a
+native app:
+
+- **iPhone / iPad (Safari):** Share button → **Add to Home Screen** → Add.
+- **Android (Chrome):** ⋮ menu → **Install app** / **Add to Home Screen**.
+- **iPad + EFB:** open it, then drag it into **Slide Over** to keep it beside
+  ForeFlight/Garmin. In the ⚙ settings you can pin the panel to the left or right.
+
+Once installed it works with **no internet** and updates automatically the next
+time you open it online.
 
 Enter altimeter setting, indicated altitude, OAT, and pick a power setting
 (75% / 65% / 55% / Holding). It shows pressure altitude, RPM, manifold pressure,
