@@ -133,7 +133,7 @@ body {
 @media (min-width: 680px) and (min-height: 561px) {
   /* Phone-sized, capped at 18px, but shrinks on shorter (landscape) tablets so
      it fits without scrolling — accounting for the installed status-bar inset. */
-  html { font-size: min(18px, 2.25dvh); }
+  html { font-size: min(18px, 2.15dvh); }
   body {
     width: min(430px, 50vw);                /* phone-width, <= half the screen */
     margin-left: auto;                      /* default: anchored right */
@@ -145,6 +145,10 @@ body {
     border-left: none;
     border-right: 1px solid var(--line);
   }
+  /* Tighter section gaps + card padding so landscape fits with the caution
+     genuinely at the bottom. */
+  .app-main { gap: 0.55rem; padding-top: 0.6rem; padding-bottom: calc(0.6rem + env(safe-area-inset-bottom)); }
+  .card { padding: 0.7rem; }
 }
 .card {
   background: var(--card);
@@ -263,6 +267,7 @@ input:disabled { opacity: 0.55; }
 }
 .power-btn .pb-title { display: block; font-weight: 600; font-size: 0.92rem; line-height: 1.2; }
 .power-btn .pb-sub { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 0.1rem; }
+.power-btn .pb-nowrap { white-space: nowrap; }   /* keep "· N GPH" on one line */
 .power-btn.active {
   border-color: var(--accent);
   background: var(--card-2);
@@ -302,6 +307,7 @@ input:disabled { opacity: 0.55; }
   opacity: 0.8;
   padding: 0.4rem 0.9rem calc(0.4rem + env(safe-area-inset-bottom));
 }
+.disclaimer .ver { opacity: 0.7; margin-left: 0.15rem; }
 
 /* Dialog ------------------------------------------------------------------ */
 .dialog {

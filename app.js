@@ -158,8 +158,11 @@
       btn.className = 'power-btn' + (key === inputs.powerKey ? ' active' : '');
       btn.dataset.key = key;
       const title = s.percent ? (s.short + ' ' + s.percent + '%') : s.short;
+      // Keep "· N GPH" together so a narrow (phone) button breaks AFTER the RPM
+      // range, not between the number and "GPH".
       btn.innerHTML = '<span class="pb-title">' + title + '</span>' +
-                      '<span class="pb-sub">' + rpmRangeLabel(s) + ' · ' + s.baseFuelGph + ' GPH</span>';
+                      '<span class="pb-sub">' + rpmRangeLabel(s) +
+                      ' <span class="pb-nowrap">· ' + s.baseFuelGph + ' GPH</span></span>';
       btn.addEventListener('click', function () {
         inputs.powerKey = key;
         persistInputs();
@@ -649,6 +652,8 @@
   twoColMQ.addEventListener('change', placePerf);
 
   // --- Init ----------------------------------------------------------------
+  const verEl = document.getElementById('appVersion');
+  if (verEl) verEl.textContent = PA46_DATA.APP_VERSION;
   renderAircraftPicker();
   renderPowerButtons();
   syncInputsToFields();

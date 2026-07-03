@@ -16,6 +16,10 @@
  * table is transcribed from the printed text.
  */
 
+// App version shown in the footer. KEEP IN SYNC with sw.js CACHE_VERSION on every
+// release so users can see when a new version has loaded.
+const APP_VERSION = 'v24';
+
 // --- Shared physics (same for every variant) ---------------------------------
 const ISA_SEA_LEVEL_TEMP_C = 15;      // deg C at sea level
 const ISA_LAPSE_C_PER_1000FT = 2;     // drops 2 deg C per 1000 ft
@@ -108,6 +112,7 @@ function dataForType(typeId) {
 
 // Namespace shared by app.js, calc.js, and the service worker.
 const PA46_DATA = {
+  APP_VERSION,
   AIRCRAFT_DATA,
   AIRCRAFT_TYPES,
   DEFAULT_AIRCRAFT_TYPE,
