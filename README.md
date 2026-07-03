@@ -19,12 +19,39 @@ native app:
 Once installed it works with **no internet** and updates automatically the next
 time you open it online.
 
-Enter altimeter setting, indicated altitude, OAT, and pick a power setting
-(75% / 65% / 55% / Holding). It shows pressure altitude, RPM, manifold pressure,
-temperature-corrected fuel flow, and expected true airspeed.
+## How to use
+*(This mirrors the in-app **Help** — tap the **?** in the header. Keep the two in
+sync when either changes.)*
 
-Add your own aircraft (name + airframe airspeed bias) via the gear icon; mark one
-as the default that opens on launch.
+**Entering conditions**
+- Set **Assigned altitude**, **Altimeter**, and **OAT** with the − / + buttons.
+  Press and hold to change quickly.
+- **Tap the Altimeter or OAT value to reset it to standard** — 29.92 in Hg for the
+  altimeter, and ISA standard temperature for the current altitude. A value glows
+  blue when it is at standard.
+- As you change altitude, OAT follows the standard lapse rate (−2 °C per 1,000 ft)
+  from wherever you set it.
+
+**Flight levels (18,000 ft and up)**
+- At or above 18,000 ft the **altimeter locks to 29.92** (standard), and pressure
+  altitude equals your assigned altitude.
+
+**Your airplane**
+- Tap the **gear (⚙)** to add or switch aircraft.
+- Each aircraft can carry an **airspeed adjustment** so the Expected airspeed
+  matches your specific airframe (e.g. "runs 3 kt slow"). Enter it as a percentage,
+  or as "−X kt at an altitude."
+
+**Checking your airspeed**
+- Tap the **Expected airspeed** to briefly see the estimated **indicated** airspeed
+  (KIAS) — handy for checking your ASI.
+
+> **Fuel flow:** these calculations are per the POH and should yield **50° lean of
+> peak** if you have an accurate fuel-flow meter to set the fuel flow. Every few
+> flights, use the standard lean-of-peak procedure to confirm your fuel meter is
+> correct.
+
+*For reference only — always verify against your POH.*
 
 ## Develop
 Pure static files — no build step. Serve locally:
