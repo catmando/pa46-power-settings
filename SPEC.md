@@ -42,12 +42,13 @@ later, but only the PA46-310P exists today.
 ---
 
 ## 2b. Input controls & visual grouping  (Notes 12–18)  [DONE]
-- **No keyboard required.** Every field is adjustable with on-screen buttons
-  (typing still works as a bonus). Assigned altitude has full-width − / + ; the
-  Altimeter and OAT each have compact **− value + ** plus a small **STD** button.
-- **STD buttons** set the standard value (altimeter → 29.92; OAT → ISA for the
-  current pressure altitude) and **gray out when already at standard** (Note 14).
-  In the flight levels the altimeter + its steppers are locked (STD grayed too).
+- **No keyboard, ever.** All three value fields are `readonly` (so a tap never
+  raises the keyboard); adjustment is entirely via the on-screen ± steppers.
+  Assigned altitude has full-width − / + ; Altimeter and OAT have compact − / + .
+- **Tap the value = set standard.** The altimeter / OAT value display doubles as
+  its own reset button: tap → altimeter 29.92, OAT → ISA for the current pressure
+  altitude. (Replaced the earlier separate STD buttons.) In the flight levels the
+  altimeter + its steppers are locked.
 - **Press-and-hold auto-repeat** on all ± buttons: tap = one step, hold = repeat
   after ~400 ms (Note 15).
 - **Order:** assigned altitude at the very top (Note 13); then the Altimeter/OAT
@@ -65,6 +66,9 @@ later, but only the PA46-310P exists today.
   calibration checks; any input change reverts to TAS. `PA46_CALC.tasToIas()`.
 - The above-ceiling warning is a short one line ("Pressure altitude is above the
   published ceiling (25,000 ft).") so it never pushes content off-screen.
+- **Holding** shows "Not Published" (violet) for airspeed — no cruise-speed curve.
+- Disclaimer ("For reference only. Verify against the POH.") is a footer **pinned
+  to the bottom** of the viewport, outside the scrollable main area.
 - **Layout note:** root font-size now `clamp(14px, 2.2dvh, 24px)` so the single
   column fills the height; verified ~92px headroom on the 393×800 medium phone.
 

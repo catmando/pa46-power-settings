@@ -117,7 +117,6 @@ body {
     align-content: start;
     gap: 10px;
   }
-  .app-main .disclaimer { grid-column: 1 / -1; }
   .field { margin-bottom: 0.35rem; }
   .field label { margin-bottom: 0.15rem; }
   .card { padding: 0.5rem; }
@@ -208,19 +207,11 @@ input:disabled { opacity: 0.55; }
   touch-action: manipulation;
 }
 .mini-btn:active { background: var(--accent); color: #04233f; }
-.std-btn {
-  flex: 0 0 auto;
-  padding: 0 0.28rem;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--accent);
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-}
-.std-btn:disabled { color: var(--muted); opacity: 0.35; cursor: default; }
+/* Values are display-only (no keyboard). Altimeter/OAT values double as a
+   "tap to set standard" button. */
+.num-val { caret-color: transparent; }
+.tap-std { cursor: pointer; }
+.tap-std:not(:disabled):active { border-color: var(--accent); }
 
 /* Informational line: pressure altitude + ISA (category: info) ------------ */
 .info-line {
@@ -238,7 +229,8 @@ input:disabled { opacity: 0.55; }
 /* 4) expected airspeed: violet (distinct from teal values & gold warnings) */
 .cat-speed .result-value { color: var(--speed); }
 .cat-speed { cursor: pointer; user-select: none; -webkit-user-select: none; }
-.cat-speed.showing-ias .result-value { color: var(--accent); } /* brief IAS peek */
+/* "Not Published" (Holding has no cruise-speed curve) — text, not a number */
+.result-na { font-size: 0.95rem; font-weight: 600; }
 
 /* Power buttons ----------------------------------------------------------- */
 .power-buttons {
@@ -289,11 +281,12 @@ input:disabled { opacity: 0.55; }
   margin-top: 0.5rem;
 }
 .disclaimer {
+  flex: 0 0 auto;                 /* pinned at the bottom of the viewport */
   text-align: center;
   font-size: 0.75rem;
   color: var(--muted);
   opacity: 0.8;
-  margin: 0.1rem 0 0.4rem;
+  padding: 0.4rem 0.9rem calc(0.4rem + env(safe-area-inset-bottom));
 }
 
 /* Dialog ------------------------------------------------------------------ */

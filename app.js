@@ -73,14 +73,12 @@
     baro: document.getElementById('baro'),
     baroUp: document.getElementById('baroUp'),
     baroDown: document.getElementById('baroDown'),
-    baroStd: document.getElementById('baroStd'),
     indAlt: document.getElementById('indAlt'),
     altUp: document.getElementById('altUp'),
     altDown: document.getElementById('altDown'),
     oat: document.getElementById('oat'),
     oatUp: document.getElementById('oatUp'),
     oatDown: document.getElementById('oatDown'),
-    oatStd: document.getElementById('oatStd'),
     infoLine: document.getElementById('infoLine'),
     powerButtons: document.getElementById('powerButtons'),
     rRPM: document.getElementById('rRPM'),
@@ -196,18 +194,8 @@
     return Math.round(PA46_DATA.isaTempC(PA46_CALC.pressureAltitude(indAlt, baro)));
   }
 
-  // Enable/disable the "set standard" buttons — grayed when already standard.
-  function updateStdButtons(forced) {
-    const baro = num(el.baro.value);
-    el.baroStd.disabled = forced || (Number.isFinite(baro) &&
-      Math.abs(baro - PA46_CALC.STANDARD_ALTIMETER_INHG) < 0.005);
-    const stdOat = standardOatC();
-    const oat = num(el.oat.value);
-    el.oatStd.disabled = (stdOat == null) || (Number.isFinite(oat) && oat === stdOat);
-  }
-
   function recompute() {
-    const forced = applyAltimeterLock();
+    applyAltimeterLock();
 
     const indAlt = num(el.indAlt.value);
     const baro = num(el.baro.value);
@@ -220,8 +208,6 @@
 
     // Keep the native step in sync with the altitude range (500 vs 1000).
     if (Number.isFinite(indAlt)) el.indAlt.step = altStepUp(indAlt);
-
-    updateStdButtons(forced);
 
     if (![indAlt, baro, oat].every(Number.isFinite)) {
       el.infoLine.innerHTML = '&nbsp;';
@@ -252,7 +238,8 @@
     el.rFF.innerHTML = fmtFF(result.fuelFlow.totalGph) + '<span class="result-unit"> GPH</span>';
 
     if (result.tasKt == null) {
-      el.rTAS.innerHTML = '—<span class="result-unit"> KTAS</span>';
+      // Holding has no published cruise-speed curve.
+      el.rTAS.innerHTML = '<span class="result-na">Not Published</span>';
     } else {
       el.rTAS.innerHTML = fmtInt(result.tasKt) + '<span class="result-unit"> KTAS</span>';
     }
@@ -531,14 +518,14 @@
   attachRepeat(el.oatUp, function () { stepOat(1); });
   attachRepeat(el.oatDown, function () { stepOat(-1); });
 
-  // "Set standard" buttons (single press; grayed when already standard).
-  el.baroStd.addEventListener('click', function () {
-    if (el.baroStd.disabled) return;
+  // Tap the altimeter / OAT value to reset it to standard (the value itself is
+  // the button — no keyboard, since the fields are readonly).
+  el.baro.addEventListener('click', function () {
+    if (el.baro.disabled) return;      // locked in the flight levels
     el.baro.value = PA46_CALC.STANDARD_ALTIMETER_INHG.toFixed(2);
     recompute();
   });
-  el.oatStd.addEventListener('click', function () {
-    if (el.oatStd.disabled) return;
+  el.oat.addEventListener('click', function () {
     const s = standardOatC();
     if (s == null) return;
     el.oat.value = s;
