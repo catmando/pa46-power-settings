@@ -10,6 +10,7 @@
     aircraft: 'pa46.aircraft',
     activeId: 'pa46.activeId',
     inputs: 'pa46.inputs',
+    panelSide: 'pa46.panelSide',
   };
 
   function loadJSON(key, fallback) {
@@ -579,6 +580,26 @@
   el.editBiasAlt.addEventListener('input', updateBiasHelp);
 
   populateTypeDropdown();
+
+  // Tablet-portrait panel side preference (default right). Only visibly affects
+  // tablets in portrait (see CSS); the class is harmless elsewhere.
+  const panelSideEl = document.getElementById('panelSide');
+  function applyPanelSide(side) {
+    document.body.classList.toggle('panel-left', side === 'left');
+    Array.prototype.forEach.call(panelSideEl.children, function (b) {
+      b.classList.toggle('active', b.dataset.side === side);
+    });
+  }
+  let panelSide = loadJSON(LS.panelSide, 'right');
+  if (panelSide !== 'left' && panelSide !== 'right') panelSide = 'right';
+  applyPanelSide(panelSide);
+  Array.prototype.forEach.call(panelSideEl.children, function (b) {
+    b.addEventListener('click', function () {
+      panelSide = b.dataset.side;
+      saveJSON(LS.panelSide, panelSide);
+      applyPanelSide(panelSide);
+    });
+  });
 
   // --- Init ----------------------------------------------------------------
   renderAircraftPicker();
