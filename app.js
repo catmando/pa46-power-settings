@@ -194,6 +194,16 @@
     return Math.round(PA46_DATA.isaTempC(PA46_CALC.pressureAltitude(indAlt, baro)));
   }
 
+  // Highlight the altimeter / OAT value when it is at its standard value.
+  function updateStandardHighlight() {
+    const baro = num(el.baro.value);
+    el.baro.classList.toggle('is-standard', Number.isFinite(baro) &&
+      Math.abs(baro - PA46_CALC.STANDARD_ALTIMETER_INHG) < 0.005);
+    const stdOat = standardOatC();
+    const oat = num(el.oat.value);
+    el.oat.classList.toggle('is-standard', stdOat != null && Number.isFinite(oat) && oat === stdOat);
+  }
+
   function recompute() {
     applyAltimeterLock();
 
@@ -208,6 +218,8 @@
 
     // Keep the native step in sync with the altitude range (500 vs 1000).
     if (Number.isFinite(indAlt)) el.indAlt.step = altStepUp(indAlt);
+
+    updateStandardHighlight();
 
     if (![indAlt, baro, oat].every(Number.isFinite)) {
       el.infoLine.innerHTML = '&nbsp;';

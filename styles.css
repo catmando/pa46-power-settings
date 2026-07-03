@@ -155,6 +155,9 @@ input[type="number"], input[type="text"] {
   font-variant-numeric: tabular-nums;
 }
 input:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+/* Readonly display fields (altitude / altimeter / OAT) never show a focus ring —
+   tapping them is an action, not text entry. */
+input[readonly]:focus { outline: none; border-color: var(--line); }
 input:disabled { opacity: 0.55; }
 .hint {
   margin: 0.3rem 0.1rem 0;
@@ -212,6 +215,12 @@ input:disabled { opacity: 0.55; }
 .num-val { caret-color: transparent; }
 .tap-std { cursor: pointer; }
 .tap-std:not(:disabled):active { border-color: var(--accent); }
+/* Value is at standard (altimeter 29.92 / OAT = ISA) — subtle highlight so you
+   can see at a glance which are standard; off-standard = tap to reset. */
+.tap-std.is-standard {
+  border-color: var(--accent);
+  background: rgba(62, 166, 255, 0.10);
+}
 
 /* Informational line: pressure altitude + ISA (category: info) ------------ */
 .info-line {

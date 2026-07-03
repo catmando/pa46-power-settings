@@ -48,7 +48,10 @@ later, but only the PA46-310P exists today.
 - **Tap the value = set standard.** The altimeter / OAT value display doubles as
   its own reset button: tap → altimeter 29.92, OAT → ISA for the current pressure
   altitude. (Replaced the earlier separate STD buttons.) In the flight levels the
-  altimeter + its steppers are locked.
+  altimeter + its steppers are locked. Readonly fields never show a focus ring;
+  instead a value gets a **subtle highlight when it is at standard** (so you can
+  see at a glance which are standard and which have been adjusted).
+- Fuel-flow readout is labelled **"Adj. fuel flow"** (temperature-corrected).
 - **Press-and-hold auto-repeat** on all ± buttons: tap = one step, hold = repeat
   after ~400 ms (Note 15).
 - **Order:** assigned altitude at the very top (Note 13); then the Altimeter/OAT
