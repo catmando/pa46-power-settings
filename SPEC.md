@@ -40,13 +40,14 @@ later, but only the PA46-310P exists today.
   headroom (verified 844×390: ~67px).
 - Body is `100dvh`, `overflow:hidden`; only `.app-main` scrolls when it must.
 - Viewport-based throughout; no device sniffing.
-- **Tablet PORTRAIT (`min-width:680px & orientation:portrait`):** render as a
-  **phone-width panel** — phone-sized font (fixed 18px, NOT height-scaled) and
-  `width: min(430px, 50vw)` (≈ half the screen or less), anchored to one side
-  with a divider; the rest is empty so it coexists with an EFB. Side is a saved
-  user preference (`pa46.panelSide`, default **right**; toggle in the gear dialog
-  → `body.panel-left`). Verified iPad mini 768×1024: body 384px, font 18px.
-- **Tablet landscape:** unchanged for now (fills a centered column) — TODO next.
+- **Tablet, BOTH orientations (`min-width:680px & min-height:561px`):** render as
+  a **phone-width panel** — phone-sized font (fixed 18px, NOT height-scaled) and
+  `width: min(430px, 50vw)`, anchored to one side with a divider, full height; the
+  rest is empty so it coexists with an EFB. The `min-height:561px` gate keeps
+  phone landscape (short) out, so that keeps its own two-column layout. Side is a
+  saved user preference (`pa46.panelSide`, default **right**; toggle in the gear
+  dialog → `body.panel-left`). Verified: iPad portrait 768×1024 (body 384px),
+  iPad landscape 1024×768 (body 430px, anchored right), both at 18px.
 
 ---
 
