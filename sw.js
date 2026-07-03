@@ -2,7 +2,7 @@
  * Service worker: caches the whole app so it runs fully offline.
  * Bump CACHE_VERSION whenever any cached file changes to force an update.
  */
-const CACHE_VERSION = 'pa46-v21';
+const CACHE_VERSION = 'pa46-v22';
 const ASSETS = [
   './',
   './index.html',
