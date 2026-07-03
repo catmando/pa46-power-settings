@@ -67,13 +67,17 @@
     aircraftSelect: document.getElementById('aircraftSelect'),
     manageBtn: document.getElementById('manageBtn'),
     baro: document.getElementById('baro'),
-    baroHint: document.getElementById('baroHint'),
+    baroUp: document.getElementById('baroUp'),
+    baroDown: document.getElementById('baroDown'),
+    baroStd: document.getElementById('baroStd'),
     indAlt: document.getElementById('indAlt'),
     altUp: document.getElementById('altUp'),
     altDown: document.getElementById('altDown'),
     oat: document.getElementById('oat'),
-    oatHint: document.getElementById('oatHint'),
-    paHint: document.getElementById('paHint'),
+    oatUp: document.getElementById('oatUp'),
+    oatDown: document.getElementById('oatDown'),
+    oatStd: document.getElementById('oatStd'),
+    infoLine: document.getElementById('infoLine'),
     powerButtons: document.getElementById('powerButtons'),
     rRPM: document.getElementById('rRPM'),
     rMAP: document.getElementById('rMAP'),
@@ -162,17 +166,15 @@
     el.oat.value = inputs.oat;
   }
 
-  // Reflect the "above 18,000 ft -> altimeter forced to 29.92" rule in the UI.
+  // Reflect the "at/above 18,000 ft -> altimeter forced to 29.92" rule: the
+  // altimeter field and its steppers are locked in the flight levels.
   function applyAltimeterLock() {
     const forced = PA46_CALC.altimeterIsForcedStandard(num(el.indAlt.value) || 0);
-    if (forced) {
-      el.baro.value = PA46_CALC.STANDARD_ALTIMETER_INHG.toFixed(2);
-      el.baro.disabled = true;
-      el.baroHint.textContent = 'Standard (FL 180+)';
-    } else {
-      el.baro.disabled = false;
-      el.baroHint.innerHTML = '&nbsp;';
-    }
+    if (forced) el.baro.value = PA46_CALC.STANDARD_ALTIMETER_INHG.toFixed(2);
+    el.baro.disabled = forced;
+    el.baroUp.disabled = forced;
+    el.baroDown.disabled = forced;
+    return forced;
   }
 
   // --- Compute + render results -------------------------------------------
@@ -180,8 +182,26 @@
   function fmtMap(n) { return (Math.round(n * 10) / 10).toFixed(1); }
   function fmtFF(n) { return (Math.round(n * 10) / 10).toFixed(1); }
 
+  // The standard OAT (rounded ISA) for the current pressure altitude.
+  function standardOatC() {
+    const indAlt = num(el.indAlt.value);
+    const baro = num(el.baro.value);
+    if (!Number.isFinite(indAlt) || !Number.isFinite(baro)) return null;
+    return Math.round(PA46_DATA.isaTempC(PA46_CALC.pressureAltitude(indAlt, baro)));
+  }
+
+  // Enable/disable the "set standard" buttons — grayed when already standard.
+  function updateStdButtons(forced) {
+    const baro = num(el.baro.value);
+    el.baroStd.disabled = forced || (Number.isFinite(baro) &&
+      Math.abs(baro - PA46_CALC.STANDARD_ALTIMETER_INHG) < 0.005);
+    const stdOat = standardOatC();
+    const oat = num(el.oat.value);
+    el.oatStd.disabled = (stdOat == null) || (Number.isFinite(oat) && oat === stdOat);
+  }
+
   function recompute() {
-    applyAltimeterLock();
+    const forced = applyAltimeterLock();
 
     const indAlt = num(el.indAlt.value);
     const baro = num(el.baro.value);
@@ -195,16 +215,10 @@
     // Keep the native step in sync with the altitude range (500 vs 1000).
     if (Number.isFinite(indAlt)) el.indAlt.step = altStepUp(indAlt);
 
-    // OAT hint: show the ISA standard temp at this pressure altitude.
-    if (Number.isFinite(indAlt) && Number.isFinite(baro)) {
-      const pa = PA46_CALC.pressureAltitude(indAlt, baro);
-      const isa = PA46_DATA.isaTempC(pa);
-      el.oatHint.textContent = 'ISA: ' + Math.round(isa) + '°C';
-    } else {
-      el.oatHint.innerHTML = '&nbsp;';
-    }
+    updateStdButtons(forced);
 
     if (![indAlt, baro, oat].every(Number.isFinite)) {
+      el.infoLine.innerHTML = '&nbsp;';
       blankResults();
       return;
     }
@@ -214,14 +228,12 @@
       activeAircraft()
     );
 
-    // Pressure altitude shown as a small hint under the assigned altitude —
-    // hidden in the flight levels (>= 18,000 ft), where PA == assigned.
-    if (result.altimeterForcedStandard) {
-      el.paHint.hidden = true;             // FL: PA == assigned, collapse the line
-    } else {
-      el.paHint.hidden = false;
-      el.paHint.textContent = 'Pressure altitude: ' + fmtInt(result.pressureAltFt) + ' ft';
-    }
+    // Informational line under the pressure/temp inputs: pressure altitude
+    // (omitted in the flight levels, where PA == assigned) plus ISA temp.
+    const isaTxt = 'ISA ' + Math.round(result.isaTempC) + '°C';
+    el.infoLine.textContent = result.altimeterForcedStandard
+      ? 'Flight levels · ' + isaTxt
+      : 'Pressure altitude ' + fmtInt(result.pressureAltFt) + ' ft · ' + isaTxt;
 
     el.rRPM.textContent = fmtInt(result.rpm);
     el.rMAP.innerHTML = fmtMap(result.manifoldPressureInHg) + '<span class="result-unit"> in Hg</span>';
@@ -244,7 +256,6 @@
   }
 
   function blankResults() {
-    el.paHint.hidden = true;
     el.rRPM.textContent = '—';
     el.rMAP.innerHTML = '—<span class="result-unit"> in Hg</span>';
     el.rFF.innerHTML = '—<span class="result-unit"> GPH</span>';
@@ -429,6 +440,8 @@
     if (Number.isFinite(newAlt)) lastIndAlt = newAlt;
   }
 
+  // Typing is still allowed on every field (bonus), but the app is fully usable
+  // with the steppers / STD buttons alone — no keyboard required.
   el.baro.addEventListener('input', recompute);
   // Live typing updates results, but OAT only re-tracks once the altitude edit is
   // committed (blur/Enter) — otherwise intermediate keystrokes would thrash it.
@@ -439,19 +452,85 @@
   });
   el.oat.addEventListener('input', recompute);
 
+  function clampNum(v, minStr, maxStr, fbMin, fbMax) {
+    const mn = parseFloat(minStr); const mx = parseFloat(maxStr);
+    if (Number.isFinite(mn)) v = Math.max(mn, v); else v = Math.max(fbMin, v);
+    if (Number.isFinite(mx)) v = Math.min(mx, v); else v = Math.min(fbMax, v);
+    return v;
+  }
+
   function stepAltitude(dir) {
     let v = num(el.indAlt.value);
     if (!Number.isFinite(v)) v = ALT_STEP_BREAK;
     v = dir > 0 ? v + altStepUp(v) : v - altStepDown(v);
-    const min = parseInt(el.indAlt.min, 10) || 0;
-    const max = parseInt(el.indAlt.max, 10) || 30000;
-    v = Math.max(min, Math.min(max, v));
+    v = clampNum(v, el.indAlt.min, el.indAlt.max, 0, 30000);
     el.indAlt.value = v;
     adjustOatForAltitude(v);
     recompute();
   }
-  el.altUp.addEventListener('click', function () { stepAltitude(1); });
-  el.altDown.addEventListener('click', function () { stepAltitude(-1); });
+  function stepBaro(dir) {
+    if (el.baro.disabled) return;
+    let v = num(el.baro.value);
+    if (!Number.isFinite(v)) v = PA46_CALC.STANDARD_ALTIMETER_INHG;
+    v = Math.round((v + dir * 0.01) * 100) / 100;
+    v = clampNum(v, el.baro.min, el.baro.max, 27, 32);
+    el.baro.value = v.toFixed(2);
+    recompute();
+  }
+  function stepOat(dir) {
+    let v = num(el.oat.value);
+    if (!Number.isFinite(v)) v = 0;
+    v = clampNum(v + dir, el.oat.min, el.oat.max, -60, 50);
+    el.oat.value = v;
+    recompute();
+  }
+
+  // Press-and-hold auto-repeat for any stepper button (Note 15). A quick tap
+  // fires once; holding starts repeating after a short delay. Keyboard fires once.
+  function attachRepeat(btn, fn) {
+    let delay = null, iv = null;
+    function stop() {
+      if (delay) { clearTimeout(delay); delay = null; }
+      if (iv) { clearInterval(iv); iv = null; }
+    }
+    btn.addEventListener('pointerdown', function (e) {
+      if (btn.disabled) return;
+      e.preventDefault();
+      fn();
+      delay = setTimeout(function () {
+        iv = setInterval(function () {
+          if (btn.disabled) { stop(); return; }
+          fn();
+        }, 90);
+      }, 400);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) {
+      btn.addEventListener(ev, stop);
+    });
+    btn.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!btn.disabled) fn(); }
+    });
+  }
+  attachRepeat(el.altUp, function () { stepAltitude(1); });
+  attachRepeat(el.altDown, function () { stepAltitude(-1); });
+  attachRepeat(el.baroUp, function () { stepBaro(1); });
+  attachRepeat(el.baroDown, function () { stepBaro(-1); });
+  attachRepeat(el.oatUp, function () { stepOat(1); });
+  attachRepeat(el.oatDown, function () { stepOat(-1); });
+
+  // "Set standard" buttons (single press; grayed when already standard).
+  el.baroStd.addEventListener('click', function () {
+    if (el.baroStd.disabled) return;
+    el.baro.value = PA46_CALC.STANDARD_ALTIMETER_INHG.toFixed(2);
+    recompute();
+  });
+  el.oatStd.addEventListener('click', function () {
+    if (el.oatStd.disabled) return;
+    const s = standardOatC();
+    if (s == null) return;
+    el.oat.value = s;
+    recompute();
+  });
 
   el.manageBtn.addEventListener('click', function () {
     renderAircraftList();

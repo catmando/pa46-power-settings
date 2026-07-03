@@ -41,6 +41,28 @@ later, but only the PA46-310P exists today.
 
 ---
 
+## 2b. Input controls & visual grouping  (Notes 12–18)  [DONE]
+- **No keyboard required.** Every field is adjustable with on-screen buttons
+  (typing still works as a bonus). Assigned altitude has full-width − / + ; the
+  Altimeter and OAT each have compact **− value + ** plus a small **STD** button.
+- **STD buttons** set the standard value (altimeter → 29.92; OAT → ISA for the
+  current pressure altitude) and **gray out when already at standard** (Note 14).
+  In the flight levels the altimeter + its steppers are locked (STD grayed too).
+- **Press-and-hold auto-repeat** on all ± buttons: tap = one step, hold = repeat
+  after ~400 ms (Note 15).
+- **Order:** assigned altitude at the very top (Note 13); then the Altimeter/OAT
+  row; then the info line; then desired performance.
+- **Pressure altitude** is a small muted info line **below** the Altimeter/OAT
+  row, combined with ISA temp, e.g. "Pressure altitude 9,620 ft · ISA −4°C"
+  (Notes 13/18). In the flight levels it reads "Flight levels · ISA …".
+- **Expected airspeed** sits in the 2×2 results grid at normal size (Note 17).
+- **Subtle color coding** (Note 18): input labels + power = soft blue; info line =
+  muted; pilot-set values (RPM / manifold / fuel flow) = teal; expected airspeed =
+  gold. Guides the eye through the flow: altitude → baro/temp → performance →
+  RPM/MP/FF → airspeed.
+- **Layout note:** root font-size now `clamp(14px, 2.2dvh, 24px)` so the single
+  column fills the height; verified ~92px headroom on the 393×800 medium phone.
+
 ## 3. Inputs  (four)
 | Input | Units | Notes |
 |---|---|---|

@@ -22,30 +22,42 @@
   </header>
 
   <main class="app-main">
-    <!-- Inputs -->
-    <section class="card inputs">
-      <div class="field-row">
-        <div class="field">
-          <label for="baro">Altimeter <span class="unit">(in Hg)</span></label>
-          <input id="baro" type="number" inputmode="decimal" step="0.01" min="27" max="32" value="29.92">
-          <p class="hint" id="baroHint">&nbsp;</p>
-        </div>
-        <div class="field">
-          <label for="oat">OAT <span class="unit">(&deg;C)</span></label>
-          <input id="oat" type="number" inputmode="numeric" step="1" min="-60" max="50" value="-5">
-          <p class="hint" id="oatHint">&nbsp;</p>
-        </div>
-      </div>
-
+    <!-- Inputs (category: input) -->
+    <section class="card inputs cat-input">
+      <!-- Assigned altitude at the top — everything flows from it -->
       <div class="field">
         <label for="indAlt">Assigned altitude <span class="unit">(ft)</span></label>
         <div class="stepper">
-          <button type="button" class="step-btn" id="altDown" aria-label="Decrease altitude">&minus;</button>
+          <button type="button" class="step-btn hold" id="altDown" aria-label="Decrease altitude">&minus;</button>
           <input id="indAlt" type="number" inputmode="numeric" step="500" min="0" max="30000" value="18000">
-          <button type="button" class="step-btn" id="altUp" aria-label="Increase altitude">+</button>
+          <button type="button" class="step-btn hold" id="altUp" aria-label="Increase altitude">+</button>
         </div>
-        <p class="hint" id="paHint">&nbsp;</p>
       </div>
+
+      <!-- Altimeter + OAT: compact stepper + "set standard" button -->
+      <div class="field-row">
+        <div class="field num-field">
+          <label for="baro">Altimeter <span class="unit">(inHg)</span></label>
+          <div class="num-control">
+            <button type="button" class="mini-btn hold" id="baroDown" aria-label="Decrease altimeter">&minus;</button>
+            <input id="baro" class="num-val" type="number" inputmode="decimal" step="0.01" min="27" max="32" value="29.92">
+            <button type="button" class="mini-btn hold" id="baroUp" aria-label="Increase altimeter">+</button>
+            <button type="button" class="std-btn" id="baroStd" title="Set standard (29.92)">STD</button>
+          </div>
+        </div>
+        <div class="field num-field">
+          <label for="oat">OAT <span class="unit">(&deg;C)</span></label>
+          <div class="num-control">
+            <button type="button" class="mini-btn hold" id="oatDown" aria-label="Decrease OAT">&minus;</button>
+            <input id="oat" class="num-val" type="number" inputmode="numeric" step="1" min="-60" max="50" value="-5">
+            <button type="button" class="mini-btn hold" id="oatUp" aria-label="Increase OAT">+</button>
+            <button type="button" class="std-btn" id="oatStd" title="Set ISA standard for this altitude">STD</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informational: pressure altitude + ISA (category: info) -->
+      <p class="info-line cat-info" id="infoLine">&nbsp;</p>
 
       <div class="field">
         <label>Desired performance</label>
@@ -56,19 +68,19 @@
     <!-- Results -->
     <section class="card results" id="results">
       <div class="result-grid">
-        <div class="result">
+        <div class="result cat-set">
           <span class="result-label">RPM</span>
           <span class="result-value" id="rRPM">—</span>
         </div>
-        <div class="result">
+        <div class="result cat-set">
           <span class="result-label">Manifold pressure</span>
           <span class="result-value" id="rMAP">—<span class="result-unit"> in Hg</span></span>
         </div>
-        <div class="result">
+        <div class="result cat-set">
           <span class="result-label">Fuel flow</span>
           <span class="result-value" id="rFF">—<span class="result-unit"> GPH</span></span>
         </div>
-        <div class="result highlight">
+        <div class="result cat-speed">
           <span class="result-label">Expected airspeed</span>
           <span class="result-value" id="rTAS">—<span class="result-unit"> KTAS</span></span>
         </div>
