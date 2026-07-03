@@ -71,6 +71,9 @@
   const el = {
     aircraftSelect: document.getElementById('aircraftSelect'),
     manageBtn: document.getElementById('manageBtn'),
+    helpBtn: document.getElementById('helpBtn'),
+    helpDialog: document.getElementById('helpDialog'),
+    closeHelpBtn: document.getElementById('closeHelpBtn'),
     baro: document.getElementById('baro'),
     baroUp: document.getElementById('baroUp'),
     baroDown: document.getElementById('baroDown'),
@@ -584,6 +587,16 @@
   el.closeDialogBtn.addEventListener('click', function () {
     if (typeof el.dialog.close === 'function') el.dialog.close();
     else el.dialog.removeAttribute('open');
+  });
+
+  // Help dialog.
+  el.helpBtn.addEventListener('click', function () {
+    if (typeof el.helpDialog.showModal === 'function') el.helpDialog.showModal();
+    else el.helpDialog.setAttribute('open', '');
+  });
+  el.closeHelpBtn.addEventListener('click', function () {
+    if (typeof el.helpDialog.close === 'function') el.helpDialog.close();
+    else el.helpDialog.removeAttribute('open');
   });
 
   // Bias mode toggle + live conversion help.
