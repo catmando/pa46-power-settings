@@ -166,8 +166,9 @@ input:disabled { opacity: 0.55; }
   min-height: 1em;
 }
 
-/* Stepper (assigned altitude) -------------------------------------------- */
-.stepper { display: flex; align-items: stretch; gap: 0.5rem; }
+/* Steppers — used by all three inputs (altitude / altimeter / OAT). Wide gaps
+   keep −, value and + as clearly separated tap targets. */
+.stepper { display: flex; align-items: stretch; gap: 0.85rem; }
 .stepper input {
   flex: 1;
   text-align: center;
@@ -183,33 +184,12 @@ input:disabled { opacity: 0.55; }
   line-height: 1;
   cursor: pointer;
   user-select: none;
-}
-.step-btn:active { background: var(--accent); color: #04233f; }
-
-/* Compact number control (altimeter / OAT): − value + STD ----------------- */
-.num-control { display: flex; align-items: stretch; gap: 0.2rem; }
-.num-control .num-val {
-  flex: 1 1 auto;
-  min-width: 0;
-  text-align: center;
-  padding: 0.4rem 0.05rem;
-  font-size: 0.95rem;
-}
-.mini-btn {
-  flex: 0 0 auto;
-  width: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--card-2);
-  color: var(--text);
-  font-size: 1.05rem;
-  line-height: 1;
-  cursor: pointer;
-  user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
 }
-.mini-btn:active { background: var(--accent); color: #04233f; }
+.step-btn:active:not(:disabled) { background: var(--accent); color: #04233f; }
+.step-btn:disabled { opacity: 0.4; cursor: default; }
+
 /* Values are display-only (no keyboard). Altimeter/OAT values double as a
    "tap to set standard" button. */
 .num-val { caret-color: transparent; }

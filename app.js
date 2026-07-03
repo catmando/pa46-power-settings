@@ -175,7 +175,8 @@
   function applyAltimeterLock() {
     const forced = PA46_CALC.altimeterIsForcedStandard(num(el.indAlt.value) || 0);
     if (forced) el.baro.value = PA46_CALC.STANDARD_ALTIMETER_INHG.toFixed(2);
-    el.baro.disabled = forced;
+    // Only the +/- buttons lock in the flight levels; the value display stays
+    // normal (highlighted as standard) so it matches the OAT field.
     el.baroUp.disabled = forced;
     el.baroDown.disabled = forced;
     return forced;
@@ -533,7 +534,7 @@
   // Tap the altimeter / OAT value to reset it to standard (the value itself is
   // the button — no keyboard, since the fields are readonly).
   el.baro.addEventListener('click', function () {
-    if (el.baro.disabled) return;      // locked in the flight levels
+    if (el.baroUp.disabled) return;    // locked in the flight levels
     el.baro.value = PA46_CALC.STANDARD_ALTIMETER_INHG.toFixed(2);
     recompute();
   });
