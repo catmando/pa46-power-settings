@@ -154,10 +154,11 @@ input[type="number"], input[type="text"] {
   font-size: 1.15rem;
   font-variant-numeric: tabular-nums;
 }
-input:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
-/* Readonly display fields (altitude / altimeter / OAT) never show a focus ring —
-   tapping them is an action, not text entry. */
-input[readonly]:focus { outline: none; border-color: var(--line); }
+/* Focus styling applies ONLY to editable inputs (the dialog fields). Readonly
+   display fields never react to focus — their border is driven purely by the
+   "is-standard" state, so focus can't fight the highlight. */
+input:not([readonly]):focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+input[readonly]:focus { outline: none; }
 input:disabled { opacity: 0.55; }
 .hint {
   margin: 0.3rem 0.1rem 0;
@@ -168,9 +169,10 @@ input:disabled { opacity: 0.55; }
 
 /* Steppers — used by all three inputs (altitude / altimeter / OAT). Wide gaps
    keep −, value and + as clearly separated tap targets. */
-.stepper { display: flex; align-items: stretch; gap: 0.85rem; }
+.stepper { display: flex; align-items: stretch; justify-content: center; gap: 1.15rem; }
 .stepper input {
-  flex: 1;
+  flex: 0 1 7rem;         /* smaller centered value box */
+  min-width: 0;
   text-align: center;
 }
 .step-btn {
