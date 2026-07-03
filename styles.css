@@ -131,7 +131,9 @@ body {
    EFB. Gated on min-height so phone LANDSCAPE (short) doesn't match — that keeps
    its own two-column layout. Side is a user preference; default is right. */
 @media (min-width: 680px) and (min-height: 561px) {
-  html { font-size: 18px; }                 /* phone-sized, not height-scaled */
+  /* Phone-sized, capped at 18px, but shrinks on shorter (landscape) tablets so
+     it fits without scrolling — accounting for the installed status-bar inset. */
+  html { font-size: min(18px, 2.25dvh); }
   body {
     width: min(430px, 50vw);                /* phone-width, <= half the screen */
     margin-left: auto;                      /* default: anchored right */
