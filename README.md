@@ -8,16 +8,36 @@ web app (PWA). No server, no login, no internet needed once loaded.
 
 ## Use it → https://catmando.github.io/pa46-power-settings/
 
-Open that link on your phone/tablet, then install it so it runs offline like a
-native app:
+Open that link on your phone/tablet, then **add it to your home screen** so it
+runs offline like a native app. Pick your device + browser below.
 
-- **iPhone / iPad (Safari):** Share button → **Add to Home Screen** → Add.
-- **Android (Chrome):** ⋮ menu → **Install app** / **Add to Home Screen**.
-- **iPad + EFB:** open it, then drag it into **Slide Over** to keep it beside
-  ForeFlight/Garmin. In the ⚙ settings you can pin the panel to the left or right.
+### iPhone / iPad — Safari  *(recommended on iOS)*
+1. Open the link in **Safari**.
+2. Tap the **Share** button (the square with an up-arrow, bottom or top bar).
+3. Scroll down and tap **Add to Home Screen**.
+4. Tap **Add** (top-right). Launch it from the new icon — full-screen and offline.
 
-Once installed it works with **no internet** and updates automatically the next
-time you open it online.
+### iPhone / iPad — Chrome
+1. Open the link in **Chrome**.
+2. Tap the **Share** button (or the **⋯** menu) → **Add to Home Screen** → **Add**.
+   *(Every iOS browser uses the same engine, so this installs just like Safari.)*
+
+### Android — Chrome  *(recommended on Android)*
+1. Open the link in **Chrome**.
+2. Tap the **⋮** menu (top-right).
+3. Tap **Install app** (or **Add to Home screen**) → **Install**.
+   *(Chrome often shows an "Install" prompt you can tap directly.)*
+
+### Android — Safari
+**Safari isn't available on Android.** Use **Chrome** (above), or **Samsung
+Internet** / **Edge** / **Firefox** — each has **Install app** / **Add to Home
+screen** in its menu and works the same way.
+
+Once installed it works with **no internet**, and updates automatically the next
+time you open it while online.
+
+**iPad + EFB:** open it, then drag it into **Slide Over** to keep it beside
+ForeFlight/Garmin. In the ⚙ settings you can pin the panel to the left or right.
 
 ## How to use
 *(This mirrors the in-app **Help** — tap the **?** in the header. Keep the two in
