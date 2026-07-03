@@ -7,19 +7,17 @@ members via a link — no app store, no login, no server, no internet required
 once loaded.
 
 ## Status (current)
-- **Fully functional and heavily UI-polished.** Service worker at `pa46-v14`.
-  53 unit tests pass (`npm test`). Working tree committed.
-- **`SPEC.md` is the living source of truth** — read it first. It documents the
-  locked calc model AND every UI decision (Notes 1–18 + follow-ups), all marked
-  [DONE]/[TODO]. This file is the shorter cross-machine handoff.
-- The UI has been iterated extensively with the user (see "UI state" below).
-- **Two things still open, both need the owner (Mitch):**
-  1. **Verified TAS numbers** off the POH chart — the `TAS_TABLE` in `data.js`
-     is still best-estimate digitization. Also seed the `TAS_TRUTH` table in
-     `tests.js` with real graph readings once available.
-  2. **Deployment** to GitHub Pages (HTTPS) so it installs + runs offline; then
-     share the link in the owners' forum. Repo has no remote yet.
-- User's last note: "almost perfect for portrait on a phone."
+- **Shipped.** Live at https://catmando.github.io/pa46-power-settings/ (GitHub
+  Pages). Fully functional, responsive, and multi-variant-ready.
+- **59 unit tests pass** (`npm test`). Bump `sw.js` CACHE_VERSION with any asset
+  change (currently pa46-v20+). Working tree committed + pushed to origin/master.
+- **`SPEC.md` is the living source of truth** — read it first for the locked calc
+  model + every UI decision. This file (CLAUDE.md) is the shorter dev handoff.
+- **TAS table** is the digitized (concave) chart data the owner supplied; guarded
+  by `TAS_TRUTH` in tests.js. Optional: a final eyeball vs. the actual chart.
+- **Open / future:** exercise on real devices; add the two Lycoming piston
+  variants (PA46-350P Mirage / PA46R-350T Matrix) IF the owner provides POH data
+  — the code is already type-driven (see "Files" → data.js). Do NOT invent numbers.
 
 ## UI state (what the app looks like now)
 Single-column layout, sized in `rem` with root font `clamp(14px,2.2dvh,24px)` so
@@ -132,18 +130,33 @@ medium phone: **393×852** (installed usable height ≈ 800).
 npm test        # or: node tests.js
 ```
 
-`tests.js` (zero deps) covers PA computation incl. forced 29.92 above 18k, RPM
-band boundaries, fuel-flow correction, Holding warning/no-TAS, TAS interpolation
-+ clamping, and airframe-bias %. It also has a `TAS_TRUTH` table (±2 kt) — replace
-its expected values with real POH-chart readings to make it a true cross-check.
-Aircraft bias is now a uniform **percentage** (`biasPct`); solve() takes
-`{ biasPct }`.
+`tests.js` (zero deps, **59 checks**) covers PA computation incl. forced 29.92 at
+18k+, RPM band boundaries, fuel-flow correction, Holding warning/no-TAS, TAS
+interpolation + clamping, airframe-bias % (incl. kt→% conversion), OAT tracking,
+TAS→IAS, the `TAS_TRUTH` guard, and **multi-type support** (§10 injects a second
+type and asserts solve() uses ITS numbers). Aircraft bias is a uniform percentage
+(`biasPct`); solve() takes `{ type, biasPct }` and resolves data by type.
 
-## Deployment (planned)
-GitHub Pages: push repo → enable Pages on the default branch root → share the
-`https://<user>.github.io/<repo>/` URL in the forum. Members open once online,
-"Add to Home Screen", then it works fully offline. Updates propagate when they're
-next online (service worker re-caches on CACHE_VERSION bump).
+## Deploying updates (it's already live)
+Live: **https://catmando.github.io/pa46-power-settings/**
+Repo:  https://github.com/catmando/pa46-power-settings  (GitHub Pages from
+`master` root; `.nojekyll` present; `gh` auth = catmando).
+
+To ship a change:
+```
+# make the edit(s), then:
+node tests.js                 # keep it green
+# bump CACHE_VERSION in sw.js (e.g. pa46-vNN -> vNN+1) so installed apps update
+git add -A && git commit -m "..." && git push origin master
+```
+Pushing triggers the `pages-build-deployment` workflow automatically (~30–60s).
+Verify: `curl -sI https://catmando.github.io/pa46-power-settings/` → 200.
+Watch a deploy: `gh run watch $(gh run list -R catmando/pa46-power-settings -L1 --json databaseId -q '.[0].databaseId') -R catmando/pa46-power-settings`.
+
+**Gotcha:** GitHub's *first-ever* deploy failed twice with a transient
+"Deployment failed, try again later" (build succeeds, deploy step 500s). Fix is
+just to retry: `gh api -X POST repos/catmando/pa46-power-settings/pages/builds`.
+Installed copies update on next online open once a deploy succeeds.
 
 ## TODO / open items
 - [x] TAS_TABLE digitized (concave curves, SL→24k) + `TAS_TRUTH` test in place.
