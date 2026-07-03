@@ -62,6 +62,10 @@
   // Baseline altitude used to track OAT as altitude changes (see below).
   let lastIndAlt = Number.isFinite(inputs.indAlt) ? inputs.indAlt : ALT_STEP_BREAK;
 
+  // Latest solved result + the timer for the "tap airspeed -> indicated" peek.
+  let lastSolve = null;
+  let iasTimer = null;
+
   // --- Elements ------------------------------------------------------------
   const el = {
     aircraftSelect: document.getElementById('aircraftSelect'),
@@ -83,6 +87,8 @@
     rMAP: document.getElementById('rMAP'),
     rFF: document.getElementById('rFF'),
     rTAS: document.getElementById('rTAS'),
+    speedCell: document.getElementById('speedCell'),
+    tasLabel: document.getElementById('tasLabel'),
     warnings: document.getElementById('warnings'),
     // dialog
     dialog: document.getElementById('manageDialog'),
@@ -227,6 +233,12 @@
       { indicatedAltFt: indAlt, altimeterInHg: baro, oatC: oat, powerKey: inputs.powerKey },
       activeAircraft()
     );
+    lastSolve = result;
+
+    // Any recompute cancels an in-progress "show indicated" peek.
+    if (iasTimer) { clearTimeout(iasTimer); iasTimer = null; }
+    el.tasLabel.textContent = 'Expected airspeed';
+    el.speedCell.classList.remove('showing-ias');
 
     // Informational line under the pressure/temp inputs: pressure altitude
     // (omitted in the flight levels, where PA == assigned) plus ISA temp.
@@ -256,6 +268,7 @@
   }
 
   function blankResults() {
+    lastSolve = null;
     el.rRPM.textContent = '—';
     el.rMAP.innerHTML = '—<span class="result-unit"> in Hg</span>';
     el.rFF.innerHTML = '—<span class="result-unit"> GPH</span>';
@@ -530,6 +543,18 @@
     if (s == null) return;
     el.oat.value = s;
     recompute();
+  });
+
+  // Tap the expected airspeed to peek at estimated INDICATED airspeed for a few
+  // seconds (handy for checking the airspeed indicator's calibration).
+  el.speedCell.addEventListener('click', function () {
+    if (!lastSolve || lastSolve.tasKt == null) return;
+    const ias = PA46_CALC.tasToIas(lastSolve.tasKt, lastSolve.pressureAltFt, inputs.oat);
+    el.tasLabel.textContent = 'Indicated (est.)';
+    el.rTAS.innerHTML = fmtInt(ias) + '<span class="result-unit"> KIAS</span>';
+    el.speedCell.classList.add('showing-ias');
+    if (iasTimer) clearTimeout(iasTimer);
+    iasTimer = setTimeout(recompute, 3500);   // recompute reverts to TAS
   });
 
   el.manageBtn.addEventListener('click', function () {

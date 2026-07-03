@@ -127,6 +127,13 @@ near('OAT +500 ft cools 1C', PA46_CALC.oatAfterAltitudeChange(-21, 18000, 18500)
 near('OAT +6000 ft cools 12C', PA46_CALC.oatAfterAltitudeChange(0, 4000, 10000), -12, 1e-9);
 near('OAT same altitude unchanged', PA46_CALC.oatAfterAltitudeChange(-5, 10000, 10000), -5, 1e-9);
 
+// === 9. TAS -> IAS (density ratio) ==========================================
+near('IAS == TAS at SL/ISA', PA46_CALC.tasToIas(150, 0, 15), 150, 0.5);
+near('IAS ~133 for TAS 176 @18k ISA', PA46_CALC.tasToIas(176, 18000, -21), 133, 2);
+ok('IAS < TAS at altitude', PA46_CALC.tasToIas(176, 18000, -21) < 176);
+ok('sigma decreases with altitude',
+  PA46_CALC.densityRatio(18000, -21) < PA46_CALC.densityRatio(0, 15));
+
 // --- Report -----------------------------------------------------------------
 console.log('\nPA46 engine tests');
 console.log('  passed: ' + passed);

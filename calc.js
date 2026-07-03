@@ -76,6 +76,21 @@ function biasKtToPct(kt, refAltFt) {
   return (kt / ref) * 100;
 }
 
+// Air density ratio (sigma) vs. sea-level standard, from pressure altitude and
+// actual OAT.  delta = pressure ratio (standard), theta = temperature ratio.
+function densityRatio(pressureAltFt, oatC) {
+  const delta = Math.pow(1 - 6.87535e-6 * pressureAltFt, 5.2558797);
+  const theta = (oatC + 273.15) / 288.15;
+  return theta > 0 ? delta / theta : 0;
+}
+
+// Estimated indicated/calibrated airspeed from TAS: IAS ≈ TAS × sqrt(sigma).
+// Lets a pilot sanity-check their airspeed indicator against the book.
+function tasToIas(tasKt, pressureAltFt, oatC) {
+  const sigma = densityRatio(pressureAltFt, oatC);
+  return sigma > 0 ? tasKt * Math.sqrt(sigma) : tasKt;
+}
+
 // Track OAT as altitude changes: shift by the ISA lapse rate (2 C / 1000 ft)
 // from the current value, so a re-assigned altitude keeps a realistic OAT while
 // preserving the pilot's deviation from standard. Returns an unrounded value;
@@ -106,7 +121,7 @@ function solve(inputs, aircraft) {
     warnings.push('Holding power is not intended for use at high altitude.');
   }
   if (paFt > PA46_DATA.CEILING_FT) {
-    warnings.push('Pressure altitude is above the published ceiling (25,000 ft); values are extrapolated.');
+    warnings.push('Pressure altitude is above the published ceiling (25,000 ft).');
   }
 
   return {
@@ -135,5 +150,7 @@ const PA46_CALC = {
   tasFromChart,
   biasKtToPct,
   oatAfterAltitudeChange,
+  densityRatio,
+  tasToIas,
   solve,
 };

@@ -11,6 +11,7 @@
   --good: #52d1a4;
   --warn: #ffb454;
   --danger: #ff6b6b;
+  --speed: #b9a3ff;
   --radius: 14px;
 }
 
@@ -234,8 +235,10 @@ input:disabled { opacity: 0.55; }
 .cat-input .field > label { color: #8fc3f2; }
 /* 3) pilot-set values (RPM / manifold / fuel flow): teal */
 .cat-set .result-value { color: var(--good); }
-/* 4) expected airspeed: gold */
-.cat-speed .result-value { color: var(--accent-2); }
+/* 4) expected airspeed: violet (distinct from teal values & gold warnings) */
+.cat-speed .result-value { color: var(--speed); }
+.cat-speed { cursor: pointer; user-select: none; -webkit-user-select: none; }
+.cat-speed.showing-ias .result-value { color: var(--accent); } /* brief IAS peek */
 
 /* Power buttons ----------------------------------------------------------- */
 .power-buttons {

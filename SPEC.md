@@ -58,8 +58,13 @@ later, but only the PA46-310P exists today.
 - **Expected airspeed** sits in the 2×2 results grid at normal size (Note 17).
 - **Subtle color coding** (Note 18): input labels + power = soft blue; info line =
   muted; pilot-set values (RPM / manifold / fuel flow) = teal; expected airspeed =
-  gold. Guides the eye through the flow: altitude → baro/temp → performance →
-  RPM/MP/FF → airspeed.
+  **violet** (`--speed #b9a3ff`; gold was too warning-like). Guides the eye through
+  the flow: altitude → baro/temp → performance → RPM/MP/FF → airspeed.
+- **Tap expected airspeed → indicated (est.)** for ~3.5 s: shows IAS = TAS ×
+  √(density ratio) as "Indicated (est.) · NNN KIAS" (blue), for airspeed-indicator
+  calibration checks; any input change reverts to TAS. `PA46_CALC.tasToIas()`.
+- The above-ceiling warning is a short one line ("Pressure altitude is above the
+  published ceiling (25,000 ft).") so it never pushes content off-screen.
 - **Layout note:** root font-size now `clamp(14px, 2.2dvh, 24px)` so the single
   column fills the height; verified ~92px headroom on the 393×800 medium phone.
 
