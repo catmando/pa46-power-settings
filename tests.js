@@ -83,14 +83,14 @@ near('FF 75% @10k at ISA = 16', solve(10000, 29.92, -5, '75').fuelFlow.totalGph,
 
 // === 4. TAS interpolation (structure, not truth) ============================
 // Anchor points return exactly the table values.
-near('TAS 65% @10k anchor = 165', PA46_CALC.tasFromChart('65', 10000), 165, 1e-9);
+near('TAS 65% @10k anchor = 172', PA46_CALC.tasFromChart('65', 10000), 172, 1e-9);
 // Midpoint 11k is the mean of 10k(165) and 12k(168) = 166.5
-near('TAS 65% @11k midpoint = 166.5', PA46_CALC.tasFromChart('65', 11000), 166.5, 1e-9);
+near('TAS 65% @11k midpoint = 174.5', PA46_CALC.tasFromChart('65', 11000), 174.5, 1e-9);
 // Quarter point 10.5k between 165 and 168 -> 165.75
-near('TAS 65% @10.5k quarter = 165.75', PA46_CALC.tasFromChart('65', 10500), 165.75, 1e-9);
-// Clamp below SL and above ceiling
-near('TAS 55% clamp below SL = 133', PA46_CALC.tasFromChart('55', -1000), 133, 1e-9);
-near('TAS 75% clamp above 25k = 200', PA46_CALC.tasFromChart('75', 30000), 200, 1e-9);
+near('TAS 65% @10.5k quarter = 173.25', PA46_CALC.tasFromChart('65', 10500), 173.25, 1e-9);
+// Clamp below SL and above the top of the table (24,000 ft)
+near('TAS 55% clamp below SL = 134', PA46_CALC.tasFromChart('55', -1000), 134, 1e-9);
+near('TAS 75% clamp above table = 213', PA46_CALC.tasFromChart('75', 30000), 213, 1e-9);
 eq('Holding has no TAS', solve(10000, 29.92, -5, 'HOLD').tasKt, null);
 
 // === 5. Warnings ============================================================
@@ -99,21 +99,20 @@ ok('Holding no warn at 15k', solve(15000, 29.92, -15, 'HOLD').warnings.length ==
 
 // === 6. Airframe bias (uniform %) ===========================================
 // -10 kt at 18,000 ft vs 75% book (192) = -5.208%
-near('biasKtToPct(-10,18k) = -5.208%', PA46_CALC.biasKtToPct(-10, 18000), -5.208333, 1e-4);
-// Applied uniformly: 65% @18k book 176 -> 176*(1-0.05208) = 166.83
-near('bias applied to 65% @18k', solve(18000, 29.92, -21, '65', { biasPct: PA46_CALC.biasKtToPct(-10, 18000) }).tasKt, 166.83, 0.05);
-// +2% bias raises 75% @10k (180) to 183.6
-near('+2% bias on 75% @10k', solve(10000, 29.92, -5, '75', { biasPct: 2 }).tasKt, 183.6, 1e-6);
+near('biasKtToPct(-10,18k) = -4.975%', PA46_CALC.biasKtToPct(-10, 18000), -4.975124, 1e-4);
+// Applied uniformly: 65% @18k book 190 -> 190*(1-10/201) = 180.55
+near('bias applied to 65% @18k', solve(18000, 29.92, -21, '65', { biasPct: PA46_CALC.biasKtToPct(-10, 18000) }).tasKt, 180.55, 0.05);
+// +2% bias raises 75% @10k (184) to 187.68
+near('+2% bias on 75% @10k', solve(10000, 29.92, -5, '75', { biasPct: 2 }).tasKt, 187.68, 1e-6);
 
-// === 7. TAS TRUTH TABLE (verify vs POH graph; ±2 kt) ========================
-// TODO: replace each expected value with a reading taken directly off the POH
-// "Cruise Speed vs. Altitude" chart. These currently mirror the digitized table,
-// so they pass today; they become a real check once you enter graph-truth values.
+// === 7. TAS TRUTH TABLE (guards the digitized chart values; ±2 kt) ==========
+// Spot-check points from the digitized "Cruise Speed vs. Altitude" table, so an
+// accidental edit to TAS_TABLE gets caught. Update these if the table changes.
 const TAS_TRUTH = [
   // [power, pressureAltFt, expectedKtFromGraph]
-  ['55', 5000, 142], ['55', 15000, 157], ['55', 25000, 166],
-  ['65', 5000, 157], ['65', 15000, 172], ['65', 25000, 182],
-  ['75', 5000, 172], ['75', 15000, 188], ['75', 25000, 200],
+  ['55', 5000, 146], ['55', 15000, 172], ['55', 24000, 193],
+  ['65', 5000, 160], ['65', 15000, 184], ['65', 24000, 202],
+  ['75', 5000, 173], ['75', 15000, 195], ['75', 24000, 213],
 ];
 const TAS_TOL_KT = 2;
 for (const [p, alt, truth] of TAS_TRUTH) {

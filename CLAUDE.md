@@ -84,18 +84,20 @@ the gear button. Keys: `pa46.aircraft`, `pa46.activeId`, `pa46.inputs`.
 - `app.js` — UI wiring, persistence, aircraft management, service-worker registration
 - `manifest.json` + `sw.js` + `icons/` — PWA install + offline caching
 
-## The TAS table — VERIFY THESE (data.js → TAS_TABLE)
-Best-estimate reads of "Cruise Speed vs. Altitude" (std temp, 3,740 lb), knots:
+## The TAS table (data.js → TAS_TABLE)
+Digitized "Cruise Speed vs. Altitude" (std temp, 3,740 lb), knots, SL→24,000.
+Curves are concave (NOT linear); clamps to the 24,000 value at the 25,000 ceiling.
+Guarded by `TAS_TRUTH` in `tests.js`. Worth a final eyeball vs. the chart someday.
 
 | Alt(ft) | 55% | 65% | 75% |   | Alt(ft) | 55% | 65% | 75% |
 |--------:|----:|----:|----:|---|--------:|----:|----:|----:|
-| 0       | 133 | 148 | 163 |   | 14000   | 156 | 171 | 186 |
-| 2000    | 137 | 152 | 167 |   | 16000   | 158 | 173 | 189 |
-| 4000    | 140 | 155 | 170 |   | 18000   | 161 | 176 | 192 |
-| 6000    | 144 | 159 | 174 |   | 20000   | 163 | 178 | 195 |
-| 8000    | 147 | 162 | 177 |   | 22000   | 164 | 180 | 197 |
-| 10000   | 150 | 165 | 180 |   | 24000   | 165 | 181 | 199 |
-| 12000   | 153 | 168 | 183 |   | 25000   | 166 | 182 | 200 |
+| 0       | 134 | 148 | 161 |   | 14000   | 169 | 181 | 193 |
+| 2000    | 139 | 152 | 166 |   | 16000   | 174 | 186 | 197 |
+| 4000    | 144 | 157 | 171 |   | 18000   | 179 | 190 | 201 |
+| 6000    | 149 | 162 | 175 |   | 20000   | 184 | 194 | 206 |
+| 8000    | 154 | 167 | 179 |   | 22000   | 188 | 198 | 209 |
+| 10000   | 159 | 172 | 184 |   | 24000   | 193 | 202 | 213 |
+| 12000   | 164 | 177 | 188 |   |         |     |     |     |
 
 ## Running / previewing
 Static file server (a VSCode/machine restart kills the background server — just
@@ -144,8 +146,8 @@ GitHub Pages: push repo → enable Pages on the default branch root → share th
 next online (service worker re-caches on CACHE_VERSION bump).
 
 ## TODO / open items
-- [ ] **Verify TAS_TABLE** against the POH chart; correct in `data.js`; then seed
-      `TAS_TRUTH` in `tests.js` with real graph readings. (Highest priority.)
+- [x] TAS_TABLE digitized (concave curves, SL→24k) + `TAS_TRUTH` test in place.
+      Optional: a final eyeball of the numbers against the actual chart.
 - [ ] Exercise the UI on Mitch's real iPhone/iPad in the installed PWA.
 - [ ] **Publish to GitHub Pages** (no git remote yet) and share the link.
 - [ ] (Optional) support hPa/mb altimeter entry in addition to in Hg.

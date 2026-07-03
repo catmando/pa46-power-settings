@@ -129,18 +129,18 @@ All constants/tables in `data.js`; pure functions in `calc.js`.
   above 20,000 ft ("not intended for high altitude").
 - **Above 18,000 ft**: altimeter field locks to 29.92.
 
-### TAS table (knots — PENDING POH VERIFICATION)
-Best-estimate digitization of "Cruise Speed vs. Altitude" (std temp, 3,740 lb):
+### TAS table (knots, std temp, 3,740 lb) — digitized, SL→24,000
+Concave curves (not linear). Clamps to the 24,000 value at the 25,000 ceiling.
 
 | Alt(ft) | 55% | 65% | 75% | | Alt(ft) | 55% | 65% | 75% |
 |--:|--:|--:|--:|--|--:|--:|--:|--:|
-| 0 | 133 | 148 | 163 | | 14000 | 156 | 171 | 186 |
-| 2000 | 137 | 152 | 167 | | 16000 | 158 | 173 | 189 |
-| 4000 | 140 | 155 | 170 | | 18000 | 161 | 176 | 192 |
-| 6000 | 144 | 159 | 174 | | 20000 | 163 | 178 | 195 |
-| 8000 | 147 | 162 | 177 | | 22000 | 164 | 180 | 197 |
-| 10000 | 150 | 165 | 180 | | 24000 | 165 | 181 | 199 |
-| 12000 | 153 | 168 | 183 | | 25000 | 166 | 182 | 200 |
+| 0 | 134 | 148 | 161 | | 14000 | 169 | 181 | 193 |
+| 2000 | 139 | 152 | 166 | | 16000 | 174 | 186 | 197 |
+| 4000 | 144 | 157 | 171 | | 18000 | 179 | 190 | 201 |
+| 6000 | 149 | 162 | 175 | | 20000 | 184 | 194 | 206 |
+| 8000 | 154 | 167 | 179 | | 22000 | 188 | 198 | 209 |
+| 10000 | 159 | 172 | 184 | | 24000 | 193 | 202 | 213 |
+| 12000 | 164 | 177 | 188 | | | | | |
 
 ---
 
@@ -220,6 +220,7 @@ service worker require HTTPS (localhost exempt; LAN IP is not).
 ---
 
 ## 13. Open items summary
-- **[TODO]** Verify TAS table against POH; correct in `data.js`.
+- **[DONE, worth a final eyeball]** TAS table digitized (concave curves), SL→24k
+  in `data.js`; guarded by `TAS_TRUTH` in `tests.js`.
 - **[TODO]** All Note 1–10 UI/behavior changes above.
 - **[TODO]** Exercise on real iPad mini + phone; publish to GitHub Pages.

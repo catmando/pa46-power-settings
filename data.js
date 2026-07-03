@@ -93,14 +93,15 @@ const POWER_SETTINGS = {
 const POWER_ORDER = ['75', '65', '55', 'HOLD'];
 
 // --- TAS table (knots) -------------------------------------------------------
-// Best-estimate digitization of "Cruise Speed vs. Altitude", at STANDARD temp
-// and the chart's reference weight of 3740 lb. Rows every 2000 ft, SL -> 25000.
-// VERIFY THESE against the POH chart; edit in place as needed.
+// Digitization of "Cruise Speed vs. Altitude", at STANDARD temp and the chart's
+// reference weight of 3740 lb. Rows every 2000 ft, SL -> 24,000. The curves are
+// concave (a given power gains more TAS with altitude), so this is NOT linear.
+// At the 25,000 ft ceiling the interpolation clamps to the 24,000 ft value.
 const TAS_TABLE = {
-  altitudesFt: [0, 2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 25000],
-  '55': [133, 137, 140, 144, 147, 150, 153, 156, 158, 161, 163, 164, 165, 166],
-  '65': [148, 152, 155, 159, 162, 165, 168, 171, 173, 176, 178, 180, 181, 182],
-  '75': [163, 167, 170, 174, 177, 180, 183, 186, 189, 192, 195, 197, 199, 200],
+  altitudesFt: [0, 2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000],
+  '55': [134, 139, 144, 149, 154, 159, 164, 169, 174, 179, 184, 188, 193],
+  '65': [148, 152, 157, 162, 167, 172, 177, 181, 186, 190, 194, 198, 202],
+  '75': [161, 166, 171, 175, 179, 184, 188, 193, 197, 201, 206, 209, 213],
 };
 
 // --- Fixed reference values --------------------------------------------------
