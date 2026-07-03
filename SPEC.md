@@ -32,10 +32,12 @@ later, but only the PA46-310P exists today.
   Altimeter + OAT share one row (`.field-row`); power-button sub-text is one line
   (RPM range without the word "RPM"); the pressure-altitude line collapses (not
   just blanks) in the flight levels.
-- **Phone landscape only (`orientation:landscape & max-height:560px`):** switches
-  to a compact **two-column** grid so the results stay visible; the inputs column
-  is taller than a phone's landscape height, so the last power buttons may need a
-  small scroll. Best-effort per Note request; results never clip.
+- **Phone landscape (`orientation:landscape & max-height:560px`):** compact
+  **two-column** grid — left = inputs (altitude/altimeter/OAT + info), right =
+  **Desired performance + results**. The performance buttons are relocated from
+  the inputs card into the results column here via a `matchMedia` listener in
+  app.js (`placePerf`), so portrait DOM/appearance is untouched. Fits with
+  headroom (verified 844×390: ~67px).
 - Body is `100dvh`, `overflow:hidden`; only `.app-main` scrolls when it must.
 - Viewport-based throughout; no device sniffing.
 - **Tablet PORTRAIT (`min-width:680px & orientation:portrait`):** render as a

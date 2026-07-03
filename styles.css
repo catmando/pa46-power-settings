@@ -231,8 +231,10 @@ input:disabled { opacity: 0.55; }
 }
 
 /* Subtle category colors (Note 18) --------------------------------------- */
-/* 1) inputs + desired power: soft blue labels */
-.cat-input .field > label { color: #8fc3f2; }
+/* 1) inputs + desired power: soft blue labels (perfField keeps it even when
+   relocated to the results column in small-landscape) */
+.cat-input .field > label,
+#perfField > label { color: #8fc3f2; }
 /* 3) pilot-set values (RPM / manifold / fuel flow): teal */
 .cat-set .result-value { color: var(--good); }
 /* 4) expected airspeed: violet (distinct from teal values & gold warnings) */

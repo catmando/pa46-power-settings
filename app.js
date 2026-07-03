@@ -601,6 +601,25 @@
     });
   });
 
+  // Small-landscape (phones) splits into two columns: inputs left, results right.
+  // The inputs stack alone is too tall, so move the Desired-performance buttons
+  // into the results (right) column there. Portrait/other layouts keep them in
+  // the inputs card exactly as authored — we only move the node when it matches.
+  const perfField = document.getElementById('perfField');
+  const inputsCard = document.querySelector('.card.inputs');
+  const resultsCard = document.querySelector('.card.results');
+  const resultGrid = resultsCard.querySelector('.result-grid');
+  const twoColMQ = window.matchMedia('(orientation: landscape) and (max-height: 560px)');
+  function placePerf(mq) {
+    if (mq.matches) {
+      if (perfField.parentNode !== resultsCard) resultsCard.insertBefore(perfField, resultGrid);
+    } else {
+      if (perfField.parentNode !== inputsCard) inputsCard.appendChild(perfField);
+    }
+  }
+  placePerf(twoColMQ);
+  twoColMQ.addEventListener('change', placePerf);
+
   // --- Init ----------------------------------------------------------------
   renderAircraftPicker();
   renderPowerButtons();
