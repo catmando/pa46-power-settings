@@ -136,10 +136,20 @@
     return lo === hi ? ('' + lo) : (lo + '–' + hi);
   }
 
+  // Keep the active aircraft's power set valid; fall back to its first power.
+  function ensureValidPowerKey() {
+    const td = PA46_DATA.dataForType(activeAircraft().type);
+    if (!td.powerSettings[inputs.powerKey]) {
+      inputs.powerKey = td.powerOrder[0];
+      persistInputs();
+    }
+  }
+
   function renderPowerButtons() {
+    const td = PA46_DATA.dataForType(activeAircraft().type);
     el.powerButtons.innerHTML = '';
-    for (const key of PA46_DATA.POWER_ORDER) {
-      const s = PA46_DATA.POWER_SETTINGS[key];
+    for (const key of td.powerOrder) {
+      const s = td.powerSettings[key];
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'power-btn' + (key === inputs.powerKey ? ' active' : '');
@@ -348,7 +358,7 @@
     const kt = num(el.editBiasKt.value);
     const alt = num(el.editBiasAlt.value);
     if (!Number.isFinite(kt) || !Number.isFinite(alt)) return 0;
-    return PA46_CALC.biasKtToPct(kt, alt);
+    return PA46_CALC.biasKtToPct(PA46_DATA.dataForType(el.editType.value), kt, alt);
   }
 
   function updateBiasHelp() {
@@ -356,7 +366,7 @@
       el.biasHelp.textContent = '+ if your airframe runs faster than book, − if slower. Applied as a uniform % at all altitudes.';
     } else {
       const pct = resolvedBiasPct();
-      const ref = PA46_CALC.tasFromChart('75', num(el.editBiasAlt.value) || 0);
+      const ref = PA46_CALC.tasFromChart(PA46_DATA.dataForType(el.editType.value), '75', num(el.editBiasAlt.value) || 0);
       el.biasHelp.textContent = 'Converted vs. 75% high-speed cruise (' +
         (ref ? Math.round(ref) + ' kt book' : '—') + ') → ' + fmtBiasPct(pct) +
         ', applied uniformly at all altitudes.';
@@ -408,6 +418,8 @@
     renderAircraftPicker();
     renderAircraftList();
     closeEditor();
+    ensureValidPowerKey();     // the active aircraft's type may have changed
+    renderPowerButtons();
     recompute();
   }
 
@@ -435,6 +447,8 @@
   el.aircraftSelect.addEventListener('change', function () {
     activeId = el.aircraftSelect.value;
     saveJSON(LS.activeId, activeId);
+    ensureValidPowerKey();     // new aircraft may be a different type
+    renderPowerButtons();
     recompute();
   });
   // As indicated altitude changes, shift OAT by the ISA lapse rate (2 C/1000 ft)
@@ -578,6 +592,7 @@
   });
   el.editBiasKt.addEventListener('input', updateBiasHelp);
   el.editBiasAlt.addEventListener('input', updateBiasHelp);
+  el.editType.addEventListener('change', updateBiasHelp);
 
   populateTypeDropdown();
 

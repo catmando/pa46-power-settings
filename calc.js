@@ -23,10 +23,9 @@ function altimeterIsForcedStandard(assignedAltFt) {
 }
 
 // Auto-select the RPM/MAP option for a power setting at a pressure altitude,
-// using each option's autoMaxFt band. Returns { rpm, map }.
-function selectRpmOption(powerKey, pressureAltFt) {
-  const setting = PA46_DATA.POWER_SETTINGS[powerKey];
-  const opts = setting.rpmOptions;
+// using each option's autoMaxFt band. `td` = a type's data (from dataForType).
+function selectRpmOption(td, powerKey, pressureAltFt) {
+  const opts = td.powerSettings[powerKey].rpmOptions;
   for (const opt of opts) {
     if (pressureAltFt < opt.autoMaxFt) return opt;
   }
@@ -35,8 +34,8 @@ function selectRpmOption(powerKey, pressureAltFt) {
 
 // Fuel flow (GPH), corrected for temperature deviation from ISA.
 //   +1 GPH per 20 C below standard, -1 GPH per 20 C above standard.
-function fuelFlow(powerKey, pressureAltFt, oatC) {
-  const base = PA46_DATA.POWER_SETTINGS[powerKey].baseFuelGph;
+function fuelFlow(td, powerKey, pressureAltFt, oatC) {
+  const base = td.powerSettings[powerKey].baseFuelGph;
   const isa = PA46_DATA.isaTempC(pressureAltFt);
   const correction = ((isa - oatC) / 20) * PA46_DATA.FUELFLOW_GPH_PER_20C;
   return {
@@ -47,10 +46,10 @@ function fuelFlow(powerKey, pressureAltFt, oatC) {
   };
 }
 
-// Linear interpolation of the TAS table for a power setting at a pressure
-// altitude. Clamps to the table ends (SL and the 25,000 ft ceiling).
-function tasFromChart(powerKey, pressureAltFt) {
-  const table = PA46_DATA.TAS_TABLE;
+// Linear interpolation of a type's TAS table for a power setting at a pressure
+// altitude. Clamps to the table ends.
+function tasFromChart(td, powerKey, pressureAltFt) {
+  const table = td.tas;
   const series = table[powerKey];
   if (!series) return null; // e.g. Holding has no curve
   const alts = table.altitudesFt;
@@ -70,8 +69,8 @@ function tasFromChart(powerKey, pressureAltFt) {
 
 // Convert a "X kt at altitude Y" airframe measurement into a uniform percentage
 // bias, using the 75% High-Speed Cruise curve (where owners typically measure).
-function biasKtToPct(kt, refAltFt) {
-  const ref = tasFromChart('75', refAltFt);
+function biasKtToPct(td, kt, refAltFt) {
+  const ref = tasFromChart(td, '75', refAltFt);
   if (!ref) return 0;
   return (kt / ref) * 100;
 }
@@ -102,26 +101,29 @@ function oatAfterAltitudeChange(curOatC, oldAltFt, newAltFt) {
 
 // Full solution for a set of inputs.
 //   inputs: { indicatedAltFt, altimeterInHg, oatC, powerKey }
-//   aircraft: { biasPct } (per-aircraft airspeed adjustment, uniform %)
+//   aircraft: { type, biasPct } — type selects the performance data set;
+//             biasPct is the per-aircraft airspeed adjustment (uniform %).
 function solve(inputs, aircraft) {
   const { indicatedAltFt, altimeterInHg, oatC, powerKey } = inputs;
-  const setting = PA46_DATA.POWER_SETTINGS[powerKey];
+  const td = PA46_DATA.dataForType(aircraft && aircraft.type);
+  const setting = td.powerSettings[powerKey];
 
   const paFt = pressureAltitude(indicatedAltFt, altimeterInHg);
   const forcedStandard = altimeterIsForcedStandard(indicatedAltFt);
-  const rpmOpt = selectRpmOption(powerKey, paFt);
-  const ff = fuelFlow(powerKey, paFt, oatC);
+  const rpmOpt = selectRpmOption(td, powerKey, paFt);
+  const ff = fuelFlow(td, powerKey, paFt, oatC);
 
   const biasPct = aircraft && Number.isFinite(aircraft.biasPct) ? aircraft.biasPct : 0;
-  let chartTas = setting.noTas ? null : tasFromChart(powerKey, paFt);
+  let chartTas = setting.noTas ? null : tasFromChart(td, powerKey, paFt);
   const tas = chartTas == null ? null : chartTas * (1 + biasPct / 100);
 
   const warnings = [];
   if (setting.noHighAltitude && paFt > PA46_DATA.HIGH_ALT_RPM_THRESHOLD_FT) {
     warnings.push('Holding power is not intended for use at high altitude.');
   }
-  if (paFt > PA46_DATA.CEILING_FT) {
-    warnings.push('Pressure altitude is above the published ceiling (25,000 ft).');
+  if (paFt > td.ceilingFt) {
+    warnings.push('Pressure altitude is above the published ceiling (' +
+      td.ceilingFt.toLocaleString('en-US') + ' ft).');
   }
 
   return {

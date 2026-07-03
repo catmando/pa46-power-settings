@@ -148,6 +148,13 @@ Concave curves (not linear). Clamps to the 24,000 value at the 25,000 ceiling.
 ---
 
 ## 6. Aircraft management  [DONE]
+- **Performance data is keyed by aircraft type** (`data.js` → `AIRCRAFT_DATA`):
+  each type has its own `powerSettings`, `tas`, `referenceWeightLb`, `ceilingFt`.
+  `dataForType(id)` resolves an aircraft's `type` (fallback = default). The engine
+  (`calc.js`) threads a type's data through every calc; the power buttons + type
+  dropdown are type-driven. Adding a variant = one new `AIRCRAFT_DATA` block
+  (template included). Multi-type behavior is covered by tests.js §10. Only the
+  PA46-310P ships today (real POH data required for any variant).
 - Multiple saved aircraft; one marked **default** (opens on launch).
 - Switch active aircraft via the **header dropdown**.
 - **Settings/manage screen** contents:

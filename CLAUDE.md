@@ -151,8 +151,13 @@ next online (service worker re-caches on CACHE_VERSION bump).
 - [ ] Exercise the UI on Mitch's real iPhone/iPad in the installed PWA.
 - [ ] **Publish to GitHub Pages** (no git remote yet) and share the link.
 - [ ] (Optional) support hPa/mb altimeter entry in addition to in Hg.
-- [ ] (Optional) add other PA46 variants later (data-driven; `AIRCRAFT_TYPES` in
-      `data.js` already lists types; each new type needs its own tables).
+- [x] **Multi-variant ready.** Performance data is keyed by aircraft type in
+      `data.js` → `AIRCRAFT_DATA` (powerSettings + tas + referenceWeightLb +
+      ceilingFt per type). Adding a variant = copy the PA46-310P block, rename,
+      fill in that variant's POH numbers (there's a commented TEMPLATE). The
+      calc, power buttons, and type dropdown all become type-driven automatically.
+      Proven by a multi-type test in `tests.js` (§10). Still need the actual POH
+      pages for any new variant — do NOT invent performance numbers.
 
 ## Not in this repo (machine-local, survives restart on this Mac)
 The witty text-to-speech hooks are personal, in `~/.claude/` (not committed):
