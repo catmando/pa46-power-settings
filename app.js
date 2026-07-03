@@ -119,11 +119,12 @@
   }
 
   // --- Render: power buttons ----------------------------------------------
+  // RPM range without the "RPM" word, so the sub-line stays one line on a phone.
   function rpmRangeLabel(setting) {
     const rpms = setting.rpmOptions.map(o => o.rpm);
     const lo = Math.min.apply(null, rpms);
     const hi = Math.max.apply(null, rpms);
-    return lo === hi ? (lo + ' RPM') : (lo + '–' + hi + ' RPM');
+    return lo === hi ? ('' + lo) : (lo + '–' + hi);
   }
 
   function renderPowerButtons() {
@@ -134,7 +135,7 @@
       btn.type = 'button';
       btn.className = 'power-btn' + (key === inputs.powerKey ? ' active' : '');
       btn.dataset.key = key;
-      const title = s.percent ? (s.label + ' (' + s.percent + '%)') : s.label;
+      const title = s.percent ? (s.short + ' ' + s.percent + '%') : s.short;
       btn.innerHTML = '<span class="pb-title">' + title + '</span>' +
                       '<span class="pb-sub">' + rpmRangeLabel(s) + ' · ' + s.baseFuelGph + ' GPH</span>';
       btn.addEventListener('click', function () {
@@ -167,7 +168,7 @@
     if (forced) {
       el.baro.value = PA46_CALC.STANDARD_ALTIMETER_INHG.toFixed(2);
       el.baro.disabled = true;
-      el.baroHint.textContent = 'Flight levels (18,000 ft+) — altimeter is 29.92 (standard).';
+      el.baroHint.textContent = 'Standard (FL 180+)';
     } else {
       el.baro.disabled = false;
       el.baroHint.innerHTML = '&nbsp;';
@@ -198,7 +199,7 @@
     if (Number.isFinite(indAlt) && Number.isFinite(baro)) {
       const pa = PA46_CALC.pressureAltitude(indAlt, baro);
       const isa = PA46_DATA.isaTempC(pa);
-      el.oatHint.textContent = 'ISA standard at this altitude: ' + Math.round(isa) + '°C';
+      el.oatHint.textContent = 'ISA: ' + Math.round(isa) + '°C';
     } else {
       el.oatHint.innerHTML = '&nbsp;';
     }
@@ -216,8 +217,9 @@
     // Pressure altitude shown as a small hint under the assigned altitude —
     // hidden in the flight levels (>= 18,000 ft), where PA == assigned.
     if (result.altimeterForcedStandard) {
-      el.paHint.innerHTML = '&nbsp;';
+      el.paHint.hidden = true;             // FL: PA == assigned, collapse the line
     } else {
+      el.paHint.hidden = false;
       el.paHint.textContent = 'Pressure altitude: ' + fmtInt(result.pressureAltFt) + ' ft';
     }
 
@@ -242,7 +244,7 @@
   }
 
   function blankResults() {
-    el.paHint.innerHTML = '&nbsp;';
+    el.paHint.hidden = true;
     el.rRPM.textContent = '—';
     el.rMAP.innerHTML = '—<span class="result-unit"> in Hg</span>';
     el.rFF.innerHTML = '—<span class="result-unit"> GPH</span>';

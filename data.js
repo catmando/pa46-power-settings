@@ -43,6 +43,7 @@ const POWER_SETTINGS = {
   '75': {
     key: '75',
     label: 'High Speed Cruise',
+    short: 'High Speed',
     percent: 75,
     baseFuelGph: 16,
     rpmOptions: [
@@ -53,6 +54,7 @@ const POWER_SETTINGS = {
   '65': {
     key: '65',
     label: 'Economy Cruise',
+    short: 'Economy',
     percent: 65,
     baseFuelGph: 14,
     rpmOptions: [
@@ -64,6 +66,7 @@ const POWER_SETTINGS = {
   '55': {
     key: '55',
     label: 'Long Range Cruise',
+    short: 'Long Range',
     percent: 55,
     baseFuelGph: 12,
     rpmOptions: [
@@ -75,6 +78,7 @@ const POWER_SETTINGS = {
   'HOLD': {
     key: 'HOLD',
     label: 'Holding',
+    short: 'Holding',
     percent: null,
     baseFuelGph: 10,
     rpmOptions: [ { rpm: 2200, map: 21.0, autoMaxFt: Infinity } ],

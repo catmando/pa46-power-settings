@@ -24,10 +24,17 @@
   <main class="app-main">
     <!-- Inputs -->
     <section class="card inputs">
-      <div class="field">
-        <label for="baro">Altimeter setting <span class="unit">(in Hg)</span></label>
-        <input id="baro" type="number" inputmode="decimal" step="0.01" min="27" max="32" value="29.92">
-        <p class="hint" id="baroHint">&nbsp;</p>
+      <div class="field-row">
+        <div class="field">
+          <label for="baro">Altimeter <span class="unit">(in Hg)</span></label>
+          <input id="baro" type="number" inputmode="decimal" step="0.01" min="27" max="32" value="29.92">
+          <p class="hint" id="baroHint">&nbsp;</p>
+        </div>
+        <div class="field">
+          <label for="oat">OAT <span class="unit">(&deg;C)</span></label>
+          <input id="oat" type="number" inputmode="numeric" step="1" min="-60" max="50" value="-5">
+          <p class="hint" id="oatHint">&nbsp;</p>
+        </div>
       </div>
 
       <div class="field">
@@ -38,12 +45,6 @@
           <button type="button" class="step-btn" id="altUp" aria-label="Increase altitude">+</button>
         </div>
         <p class="hint" id="paHint">&nbsp;</p>
-      </div>
-
-      <div class="field">
-        <label for="oat">OAT <span class="unit">(&deg;C)</span></label>
-        <input id="oat" type="number" inputmode="numeric" step="1" min="-60" max="50" value="-5">
-        <p class="hint" id="oatHint">&nbsp;</p>
       </div>
 
       <div class="field">

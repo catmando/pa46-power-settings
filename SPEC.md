@@ -26,8 +26,12 @@ later, but only the PA46-310P exists today.
   2.05dvh, 23px)`). So the phone-portrait layout simply **scales up to fill an
   iPad** (portrait or landscape) and down to fit shorter screens — same layout,
   proportionally sized. Column width = `min(94vw, 34rem)`, centered.
-- **Verified no-scroll:** phone portrait (500×844), iPad portrait (768×1024),
-  iPad landscape (1024×768, within ~2px).
+- **Reference device = medium phone (393×852).** Verified via CDP device
+  emulation: at the installed usable height (393×800) the content is ~619px with
+  ~116px headroom; also fits iPad portrait/landscape. To keep it compact & clean:
+  Altimeter + OAT share one row (`.field-row`); power-button sub-text is one line
+  (RPM range without the word "RPM"); the pressure-altitude line collapses (not
+  just blanks) in the flight levels.
 - **Phone landscape only (`orientation:landscape & max-height:560px`):** switches
   to a compact **two-column** grid so the results stay visible; the inputs column
   is taller than a phone's landscape height, so the last power buttons may need a
