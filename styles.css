@@ -169,9 +169,9 @@ input:disabled { opacity: 0.55; }
 
 /* Steppers — used by all three inputs (altitude / altimeter / OAT). Wide gaps
    keep −, value and + as clearly separated tap targets. */
-.stepper { display: flex; align-items: stretch; justify-content: center; gap: 1.15rem; }
+.stepper { display: flex; align-items: stretch; justify-content: space-between; gap: 0.5rem; }
 .stepper input {
-  flex: 0 1 7rem;         /* smaller centered value box */
+  flex: 0 1 7rem;         /* value box centered between the edge buttons */
   min-width: 0;
   text-align: center;
 }
