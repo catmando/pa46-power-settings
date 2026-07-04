@@ -33,7 +33,11 @@ html, body {
    (Viewport-based, never device sniffing — Note 4 / Note 11 layout.) */
 html {
   height: 100%;
-  font-size: clamp(14px, 2.2dvh, 24px);
+  /* Size to viewport HEIGHT, but also cap by WIDTH so a narrow-but-tall window
+     (iPad Slide Over) stays phone-sized instead of ballooning. 4.8vw is tuned so
+     normal phones keep the height-based size (no change); only very narrow
+     windows get capped by width. */
+  font-size: clamp(14px, min(2.2dvh, 4.8vw), 24px);
 }
 body {
   height: 100dvh;

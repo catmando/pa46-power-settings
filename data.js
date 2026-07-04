@@ -18,7 +18,7 @@
 
 // App version shown in the footer. KEEP IN SYNC with sw.js CACHE_VERSION on every
 // release so users can see when a new version has loaded.
-const APP_VERSION = 'v24';
+const APP_VERSION = 'v25';
 
 // --- Shared physics (same for every variant) ---------------------------------
 const ISA_SEA_LEVEL_TEMP_C = 15;      // deg C at sea level
