@@ -168,6 +168,11 @@ Installed copies update on next online open once a deploy succeeds.
       "Deployment failed, try again later" — a retry (`gh api -X POST .../pages/builds`)
       fixed it. To ship updates: commit, bump `sw.js` CACHE_VERSION, push to master.
 - [ ] Exercise the UI on Mitch's real iPhone/iPad in the installed PWA.
+- [ ] **TSIO-550-C conversion type** — source charts archived in
+      [`reference/tsio-550-c/`](reference/tsio-550-c/) (see its README for the
+      extracted power table + modeling decisions). Deferred; owner just wanted the
+      docs archived for now. Structurally different (ROP/LOP fuel flows,
+      engine-specific, 9 power settings) — settle the decisions in that README first.
 - [ ] (Optional) support hPa/mb altimeter entry in addition to in Hg.
 - [x] **Multi-variant ready.** Performance data is keyed by aircraft type in
       `data.js` → `AIRCRAFT_DATA` (powerSettings + tas + referenceWeightLb +
