@@ -174,6 +174,16 @@ Installed copies update on next online open once a deploy succeeds.
       docs archived for now. Structurally different (ROP/LOP fuel flows,
       engine-specific, 9 power settings) — settle the decisions in that README first.
 - [ ] (Optional) support hPa/mb altimeter entry in addition to in Hg.
+- [x] **ForeFlight integration — investigated 2026-10-01, resolved with no code.**
+      Owner uses iPad **Split View** (app pinned left/right; tap ForeFlight to go
+      back). Slide Over rejected (gets knocked around in turbulence). Findings:
+      iOS PWAs can't register a custom scheme (`pa46power://` needs a native
+      wrapper + Xcode + Apple dev account — owner declined; WebIntoApp doesn't
+      avoid any of that). ForeFlight Documents PDFs DO follow custom-scheme links
+      (tested `shortcuts://`). An `https://` link from ForeFlight opens the
+      Safari copy, which works offline via the SW cache but is a separate
+      copy (own localStorage) subject to Safari's 7-day data eviction.
+      Possible follow-up: verify layout at Split View widths (⅓, ½, ⅔).
 - [x] **Multi-variant ready.** Performance data is keyed by aircraft type in
       `data.js` → `AIRCRAFT_DATA` (powerSettings + tas + referenceWeightLb +
       ceilingFt per type). Adding a variant = copy the PA46-310P block, rename,
